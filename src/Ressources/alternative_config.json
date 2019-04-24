@@ -1,0 +1,55 @@
+{
+    "logfile": "data.log",
+    "createLogs": false,
+    "logfileRandomPrefix": true,
+    "showImages": true,
+    "saveImages": false,
+
+    "cameraSettings": {
+        "shutterTime": 700
+    },
+
+    "imageProcessors": [
+        {
+            "id": "1",
+            "type": "numberDetection",
+            "preprocessing": {
+                "type": "sharpen",
+                "filter": ""
+            },
+            "edgeDetection": {
+                "type": "canny",
+                "threshold1": "200",
+                "threshold2": "255"
+            },
+            "featureDetection": {
+                "type": "findContours"
+            },
+            "signDetection": {
+                "type": "DnnMnist",
+                "path": "model/mnist_trained_model.h5"
+            }
+        },
+        {
+            "id": "2",
+            "type": "startDetection",
+            "preprocessing": {
+                "type": "blur",
+                "filter": "gaussian"
+            },
+            "edgeDetection": {
+                "type": "canny",
+                "minThreshold": "200",
+                "maxThreshold": "255"
+            },
+            "featureDetection": {
+                "type": "findRectangles"
+            },
+            "signDetection": {
+                "type": "templateMatching",
+                "templateFolder": "numberTemplates"
+            }
+
+        }
+    ]
+}
