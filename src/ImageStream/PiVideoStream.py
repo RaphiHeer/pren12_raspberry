@@ -4,14 +4,14 @@ from picamera import PiCamera
 from threading import Thread
 import cv2
 
-class PiVideoStream:
+class PiVideoStream(ImageVideoStreamBase):
     def __init__(self, settings):
         # initialize the camera and stream
         self.camera = PiCamera()
         self.camera.resolution = settings['resolution']
         self.camera.framerate = settings['framerate']
         self.shutter_time = settings['shutter_time']
-        self.rawCapture = PiRGBArray(self.camera, size=resolution)
+        self.rawCapture = PiRGBArray(self.camera, size=self.resolution)
         self.stream = self.camera.capture_continuous(self.rawCapture,
             format="bgr", use_video_port=True)
 
