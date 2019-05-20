@@ -34,6 +34,9 @@ class ConfigReader:
             self.imageStreamSettings["type"] = jsonImageStreamSettings.get("type", "picam")
             if self.imageStreamSettings["type"] == "picam":
                 self.imageStreamSettings["shutterTime"] = jsonImageStreamSettings.get("shutterTime", 4000)
+                self.imageStreamSettings["resolutionW"] = jsonImageStreamSettings("resolutionW", 640)
+                self.imageStreamSettings["resolutionH"] = jsonImageStreamSettings("resolutionH", 480)
+                self.imageStreamSettings["resolution"] = (self.imageStreamSettings["resolutionW"], self.imageStreamSettings["resolutionH"])
             elif jsonImageStreamSettings["type"] == "file":
                 self.imageStreamSettings["path"] = jsonImageStreamSettings.get("path")
                 self.imageStreamSettings["framerate"] = jsonImageStreamSettings.get("framerate", 30)

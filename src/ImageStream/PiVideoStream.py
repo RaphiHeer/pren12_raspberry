@@ -1,4 +1,5 @@
 # import the necessary packages
+from .ImageVideoStreamBase import *
 from picamera.array import PiRGBArray
 from picamera import PiCamera
 from threading import Thread

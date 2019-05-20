@@ -7,7 +7,9 @@
 
     "imageStream": {
         "type": "picam",
-        "shutterTime": 4700
+        "shutterTime": 4000,
+        "resolutionW": 640,
+        "resolutionH": 480
     },
 
     "imageProcessors": [
@@ -15,13 +17,13 @@
             "id": "1",
             "type": "numberDetection",
             "preProcessing": {
-                "type": "none",
-                "filter": ""
+                "type": "gammaCorrection",
+                "filter": "5.5"
             },
             "segmentation": {
                 "type": "canny",
-                "minThreshold": "200",
-                "maxThreshold": "255"
+                "minThreshold": "250",
+                "maxThreshold": "100"
             },
             "featureDetection": {
                 "type": "findContours"
