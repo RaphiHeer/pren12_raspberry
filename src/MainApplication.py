@@ -2,9 +2,12 @@ import argparse
 from threading import Thread
 from ConfigReader import *
 from ImageProcessing import *
-from ImageDebugger import *
-from keras.models import load_model
-from time import sleep
+from ImageProcessing.ImageDebugger import *
+from ImageProcessing.ImageProcessorFactory import *
+from ImageStream import *
+from ImageStream.FileVideoStream import *
+#from keras.models import load_model
+#from time import sleep
 
 #from src.SignDetection.ImagePreProcessing import *
 #from src.SignDetection.FeatureExtraction import *
@@ -18,8 +21,21 @@ if args["config"]:
     configPath = args["config"]
 else:
     configPath = "Ressources/config.json"
+print(configPath)
 
 config = ConfigReader(configPath)
+
+debugger = ImageDebugger(True, False)
+
+stream = FileVideoStream(config.getImageStreamSettings())
+stream = stream.start()
+
+factory = ImageProcessorFactory()
+
+imageProcessors = factory.createImageProcessors(config.imageProcessors)
+imageProcessors[0].processVideoStream(stream, "")
+
+cv2.waitKey()
 """
 #import CNN model weight
 model= load_model('./model/mnist_trained_model.h5')

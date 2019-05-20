@@ -25,7 +25,10 @@ class ImageDebugger:
 
         if self.showImage | self.saveImage:
             for region in regions:
-                x, y, w, h = region
+                print(region)
+                #rect = cv2.boundingRect(region)
+                x, y, w, h = rect
+                cv2.drawContours(image, [region], -1, (240, 0, 159), 3)
                 cv2.rectangle(image, (x,y), (x+w, y+h), colorBoundingBox, 2)
 
         return

@@ -2,16 +2,20 @@ import json
 
 class ConfigReader:
 
-
-
     def __init__(self, configPath):
         print("Created Configreader")
         with open(configPath) as json_data:
             jsonData = json.load(json_data)
 
         self.setLogSettings(jsonData)
-        self.setCameraSettings(jsonData)
+        self.setImageStreamSettings(jsonData)
         self.setImageProcessorSettings(jsonData)
+
+    def getImageStreamSettings(self):
+        return self.imageStreamSettings
+
+    def getImageProcessors(self):
+        return self.imageProcessors
 
     def setLogSettings(self, jsonData):
         self.logfile = jsonData.get("logfile", "data.log")
@@ -21,13 +25,19 @@ class ConfigReader:
         self.saveImages = jsonData.get("saveImages", False)
 
 
-    def setCameraSettings(self, jsonData):
-        jsonCameraSettings = jsonData.get("cameraSettings", "default")
-        self.cameraSettings = {}
-        if jsonCameraSettings == "default":
-            self.cameraSettings["shutterTime"] = 1000
+    def setImageStreamSettings(self, jsonData):
+        jsonImageStreamSettings = jsonData.get("imageStream", "default")
+        self.imageStreamSettings = {}
+        if jsonImageStreamSettings == "default":
+            self.imageStreamSettings["shutterTime"] = 4000
         else:
-            self.cameraSettings["shutterTime"] = jsonCameraSettings.get("shutterTime", 1000)
+            self.imageStreamSettings["type"] = jsonImageStreamSettings.get("type", "picam")
+            if self.imageStreamSettings["type"] == "picam":
+                self.imageStreamSettings["shutterTime"] = jsonImageStreamSettings.get("shutterTime", 4000)
+            elif jsonImageStreamSettings["type"] == "file":
+                self.imageStreamSettings["path"] = jsonImageStreamSettings.get("path")
+                self.imageStreamSettings["framerate"] = jsonImageStreamSettings.get("framerate", 30)
+            print(self.imageStreamSettings)
 
     def setImageProcessorSettings(self, jsonData):
         jsonImageProcessors = jsonData.get("imageProcessors", "None")
@@ -44,12 +54,12 @@ class ConfigReader:
         imageProcessorSettings["imageSource"] = jsonImageProcessor.get("imageSource", "videoStream")
 
         jsonPreProcessor = jsonImageProcessor.get("preProcessing")
-        jsonEdgeDetection = jsonImageProcessor.get("edgeDetection")
+        jsonSegmentation = jsonImageProcessor.get("segmentation")
         jsonFeatureDetection = jsonImageProcessor.get("featureDetection")
         jsonSignDetection = jsonImageProcessor.get("signDetection")
 
         imageProcessorSettings["preProcessing"] = self.createImagePreProcessorSettings(jsonPreProcessor)
-        imageProcessorSettings["edgeDetection"] = self.createImageEdgeDetection(jsonEdgeDetection)
+        imageProcessorSettings["segmentation"] = self.createImageSegmentation(jsonSegmentation)
         imageProcessorSettings["featureDetection"] = self.createImageFeatureDetection(jsonFeatureDetection)
         imageProcessorSettings["signDetection"] = self.createImageSignDetection(jsonSignDetection)
 
@@ -59,19 +69,22 @@ class ConfigReader:
         preProcessorSettings = {}
         preProcessorSettings["type"] = jsonImagePreprocessor.get("type", "none")
 
+        if preProcessorSettings["type"] == "gammaCorrection":
+            preProcessorSettings["gamma"] = jsonImagePreprocessor.get("gamma", 2)
+
         return preProcessorSettings
 
 
 
-    def createImageEdgeDetection(self, jsonImageEdgeDetection):
-        edgeDetectionSettings = {}
-        edgeDetectionSettings["type"] = jsonImageEdgeDetection.get("type", "canny")
+    def createImageSegmentation(self, jsonImageSegmentation):
+        segmentationSettings = {}
+        segmentationSettings["type"] = jsonImageSegmentation.get("type", "canny")
 
-        if edgeDetectionSettings["type"] == "canny":
-            edgeDetectionSettings["threshold1"] = jsonImageEdgeDetection.get("threshold1", 200)
-            edgeDetectionSettings["threshold2"] = jsonImageEdgeDetection.get("threshold2", 210)
+        if segmentationSettings["type"] == "canny":
+            segmentationSettings["threshold1"] = jsonImageSegmentation.get("threshold1", 200)
+            segmentationSettings["threshold2"] = jsonImageSegmentation.get("threshold2", 210)
 
-        return edgeDetectionSettings
+        return segmentationSettings
 
     def createImageFeatureDetection(self, jsonImageFeatureDetection):
         featureDetectionSettings = {}

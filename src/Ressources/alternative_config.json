@@ -5,8 +5,9 @@
     "showImages": true,
     "saveImages": false,
 
-    "cameraSettings": {
-        "shutterTime": 700
+    "imageStream": {
+        "type": "files",
+        "folderPath": "imageSeries/shutter10"
     },
 
     "imageProcessors": [
@@ -14,13 +15,13 @@
             "id": "1",
             "type": "numberDetection",
             "preprocessing": {
-                "type": "sharpen",
-                "filter": ""
+                "type": "gammaCorrection",
+                "gamma": 5
             },
-            "edgeDetection": {
+            "segmentation": {
                 "type": "canny",
-                "threshold1": "200",
-                "threshold2": "255"
+                "threshold1": 200,
+                "threshold2": 255
             },
             "featureDetection": {
                 "type": "findContours"
@@ -37,10 +38,10 @@
                 "type": "blur",
                 "filter": "gaussian"
             },
-            "edgeDetection": {
+            "segmentation": {
                 "type": "canny",
-                "minThreshold": "200",
-                "maxThreshold": "255"
+                "minThreshold": 200,
+                "maxThreshold": 255
             },
             "featureDetection": {
                 "type": "findRectangles"

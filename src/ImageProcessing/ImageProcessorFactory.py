@@ -1,8 +1,9 @@
 from .ImageProcessor import *
 from .ImagePreProcessing.ImagePreProcessorBase import *
 from .ImagePreProcessing.ImagePreProcessorNone import *
-from .ImageEdgeDetection.ImageEdgeDetectorBase import *
-from .ImageEdgeDetection.ImageEdgeDetectorCanny import *
+from .ImagePreProcessing.ImagePreProcessorGammaCorrection import *
+from .ImageSegmentation.ImageSegmentationBase import *
+from .ImageSegmentation.ImageSegmentationCanny import *
 from .ImageFeatureDetection.ImageFeatureDetectorBase import *
 from .ImageFeatureDetection.ImageFeatureDetectorFindContours import *
 from .ImageSignDetection.ImageSignDetectorBase import *
@@ -18,11 +19,11 @@ class ImageProcessorFactory:
         for imageProcessorSetting in settings:
 
             imagePreProcessor = self.createImagePreProcessor(imageProcessorSetting['preProcessing'])
-            imageEdgeDetector = self.createImageEdgeDetector(imageProcessorSetting['edgeDetection'])
+            imageSegmentation = self.createImageSegmentation(imageProcessorSetting['segmentation'])
             imageFeatureDetector = self.createImageFeatureDetector(imageProcessorSetting['featureDetection'])
             imageSignDetector = self.createImageSignDetector(imageProcessorSetting['signDetection'])
 
-            imageProcessor = ImageProcessor(imagePreProcessor, imageEdgeDetector, imageFeatureDetector, imageSignDetector)
+            imageProcessor = ImageProcessor(imagePreProcessor, imageSegmentation, imageFeatureDetector, imageSignDetector)
             imageProcessors.append(imageProcessor)
 
         return imageProcessors
@@ -31,14 +32,16 @@ class ImageProcessorFactory:
         imagePreProcessor = ImagePreProcessorNone(settings)
         if settings['type'] == 'none':
             imagePreProcessor = ImagePreProcessorNone(settings)
+        elif settings['type'] == 'gammaCorrection':
+            imagePreProcessor = ImagePreProcessorGammaCorrection(settings)
 
         return imagePreProcessor
 
-    def createImageEdgeDetector(self, settings):
+    def createImageSegmentation(self, settings):
         if settings['type'] == 'canny':
-            imageEdgeDetector = ImageEdgeDetectorCanny(settings)
+            imageSegmentation = ImageSegmentationCanny(settings)
 
-        return imageEdgeDetector
+        return imageSegmentation
 
     def createImageFeatureDetector(self, settings):
         if settings['type'] == 'findContours':
