@@ -7,11 +7,22 @@ import cv2
 
 class PiVideoStream(ImageVideoStreamBase):
     def __init__(self, settings):
-        # initialize the camera and stream
+        # Read settings
+        self.resolution = settings['resolution']
+        self.framerate = settings['framerate']
+        self.shutterTime = settings['shutterTime']
+        self.iso = settings['iso']
+
+        # Init camera and settings
         self.camera = PiCamera()
-        self.camera.resolution = settings['resolution']
-        self.camera.framerate = settings['framerate']
-        self.shutter_time = settings['shutter_time']
+        self.camera.resolution = self.resolution
+        self.camera.framerate = self.framerate
+        self.camera.exposure_mode = 'off'
+        self.camera.rotation = 180
+        self.camera.shutter_speed = self.shutterTime
+        self.camera.iso = self.iso
+
+        # Create stream
         self.rawCapture = PiRGBArray(self.camera, size=self.resolution)
         self.stream = self.camera.capture_continuous(self.rawCapture,
             format="bgr", use_video_port=True)

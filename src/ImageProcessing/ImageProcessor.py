@@ -29,7 +29,7 @@ class ImageProcessor:
             print("Read next image")
             image = videoStream.read()
             cv2.imshow("Test", image)
-            cv2.waitKey()
+            #cv2.waitKey()
 
             imageGray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
             self.debugger.debugImage("From Camera", image)
