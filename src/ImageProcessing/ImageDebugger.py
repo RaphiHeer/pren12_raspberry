@@ -1,7 +1,7 @@
 import cv2
 
 class ImageDebugger:
-    def __init__(self, showImage = False, saveImage = False):
+    def __init__(self, configM):
         """"
         if isinstance(showImage, str):
             self.showImage = (showImage == 'true')

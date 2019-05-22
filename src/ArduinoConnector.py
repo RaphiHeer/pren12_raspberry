@@ -1,20 +1,16 @@
 import RPi.GPIO as GPIO
 
 class ArduinoConnector:
-    # Number PINS
-    GPIO_NUMBER_0 = 0
-    GPIO_NUMBER_1 = 20
-    GPIO_NUMBER_2 = 21
-    GPIO_NUMBER_3 = 26
-    GPIO_NUMBER_4 = 0
-    GPIO_NUMBER_5 = 0
-    GPIO_NUMBER_6 = 0
-    GPIO_NUMBER_7 = 0
-    GPIO_NUMBER_8 = 0
-    GPIO_NUMBER_9 = 0
 
-    GPIO_START_DETECTED = 19
-    GPIO_STOP_DETECTED = 13
+    # Number PINS
+    GPIO_SIGN_INTERRUPT = 20
+
+    GPIO_IS_INFO_SIGN = 21
+
+    GPIO_NUMBER_BIT_0 = 26
+    GPIO_NUMBER_BIT_1 = 19
+    GPIO_NUMBER_BIT_2 = 13
+    GPIO_NUMBER_BIT_3 = 6
 
     # Init Pins
     GPIO_PI_INI_DONE = 12

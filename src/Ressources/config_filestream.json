@@ -1,10 +1,11 @@
 {
-    "logfile": "data.log",
-    "createLogs": false,
-    "logfileRandomPrefix": true,
-    "showImages": true,
-    "saveImages": false,
-
+    "applicationSettings": {
+        "logfile": "data.log",
+        "createLogs": false,
+        "logfileRandomPrefix": true,
+        "showImages": true,
+        "saveImages": false
+    },
     "imageStream": {
         "type": "file",
         "path": "imageSeries/shutter4/",

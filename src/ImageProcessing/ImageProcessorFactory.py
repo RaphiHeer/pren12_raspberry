@@ -13,7 +13,7 @@ class ImageProcessorFactory:
     def __init__(self):
         return
 
-    def createImageProcessors(self, settings):
+    def createImageProcessors(self, settings, debugger):
         imageProcessors = []
 
         for imageProcessorSetting in settings:
@@ -23,7 +23,7 @@ class ImageProcessorFactory:
             imageFeatureDetector = self.createImageFeatureDetector(imageProcessorSetting['featureDetection'])
             imageSignDetector = self.createImageSignDetector(imageProcessorSetting['signDetection'])
 
-            imageProcessor = ImageProcessor(imagePreProcessor, imageSegmentation, imageFeatureDetector, imageSignDetector)
+            imageProcessor = ImageProcessor(imagePreProcessor, imageSegmentation, imageFeatureDetector, imageSignDetector, debugger)
             imageProcessors.append(imageProcessor)
 
         return imageProcessors

@@ -7,9 +7,12 @@ class ConfigReader:
         with open(configPath) as json_data:
             jsonData = json.load(json_data)
 
-        self.setLogSettings(jsonData)
+        self.setApplicationSettings(jsonData)
         self.setImageStreamSettings(jsonData)
         self.setImageProcessorSettings(jsonData)
+
+    def getApplicationSettings(self):
+        return self.applicationSettings
 
     def getImageStreamSettings(self):
         return self.imageStreamSettings
@@ -17,12 +20,15 @@ class ConfigReader:
     def getImageProcessors(self):
         return self.imageProcessors
 
-    def setLogSettings(self, jsonData):
-        self.logfile = jsonData.get("logfile", "data.log")
-        self.createLogs = jsonData.get("createLogs", False)
-        self.logfileRandomPrefix = jsonData.get("logfileRandomPrefix", True)
-        self.showImages = jsonData.get("showImages", True)
-        self.saveImages = jsonData.get("saveImages", False)
+    def setApplicationSettings(self, jsonData):
+        jsonApplicationSettings = jsonData.get("applicationSettings", {})
+        self.applicationSettings = {}
+
+        self.applicationSettings["logfile"] = jsonApplicationSettings.get("logfile", "data.log")
+        self.applicationSettings["createLogs"] = jsonApplicationSettings.get("createLogs", False)
+        self.applicationSettings["logfileRandomPrefix"] = jsonApplicationSettings.get("logfileRandomPrefix", True)
+        self.applicationSettings["showImages"] = jsonApplicationSettings.get("showImages", True)
+        self.applicationSettings["saveImages"] = jsonApplicationSettings.get("saveImages", False)
 
 
     def setImageStreamSettings(self, jsonData):

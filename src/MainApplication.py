@@ -6,12 +6,7 @@ from ImageProcessing.ImageDebugger import *
 from ImageProcessing.ImageProcessorFactory import *
 from ImageStream import *
 from ImageStream.FileVideoStream import *
-#from keras.models import load_model
-#from time import sleep
 
-#from src.SignDetection.ImagePreProcessing import *
-#from src.SignDetection.FeatureExtraction import *
-#from src.SignDetection.NumberPrediction import *
 
 ap = argparse.ArgumentParser()
 ap.add_argument("-c", "--config", required=False, help="path to input image")
@@ -21,21 +16,24 @@ if args["config"]:
     configPath = args["config"]
 else:
     configPath = "Ressources/config.json"
-print(configPath)
+print("Load config from: " + configPath)
 
-config = ConfigReader(configPath)
+def runMainApplication(configPath):
+    config = ConfigReader(configPath)
 
-debugger = ImageDebugger(True, False)
+    debugger = ImageDebugger(config.getApplicationSettings)
 
-stream = FileVideoStream(config.getImageStreamSettings())
-stream = stream.start()
+    stream = FileVideoStream(config.getImageStreamSettings())
+    stream = stream.start()
 
-factory = ImageProcessorFactory()
+    factory = ImageProcessorFactory()
 
-imageProcessors = factory.createImageProcessors(config.imageProcessors)
-imageProcessors[0].processVideoStream(stream, "")
+    imageProcessors = factory.createImageProcessors(config.imageProcessors, debugger)
+    imageProcessors[0].processVideoStream(stream, "")
 
-cv2.waitKey()
+if __name__ == '__main__':
+    runMainApplication(configPath)
+
 """
 #import CNN model weight
 model= load_model('./model/mnist_trained_model.h5')

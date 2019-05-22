@@ -4,8 +4,6 @@ from .ImageSegmentation.ImageSegmentationBase import *
 from .ImageFeatureDetection.ImageFeatureDetectorBase import *
 from .ImageSignDetection.ImageSignDetectorBase import *
 import cv2
-from imutils.video import VideoStream
-import time
 
 class ImageProcessor:
 
@@ -13,13 +11,14 @@ class ImageProcessor:
                  preProcessor: ImagePreProcessorBase,
                  segmentation: ImageSegmentationBase,
                  featureDetector: ImageFeatureDetectorBase,
-                 signDetector: ImageSignDetectorBase):
+                 signDetector: ImageSignDetectorBase,
+                 debugger: ImageDebugger):
         self.preProcessor = preProcessor
         self.segmentation = segmentation
         self.featureDetector = featureDetector
         self.signDetector = signDetector
 
-        self.debugger = ImageDebugger(True, False)
+        self.debugger = debugger
 
     def setDebugger(self, debugger):
         self.debugger = debugger
@@ -46,9 +45,16 @@ class ImageProcessor:
 
             for region in regionsOfInterest:
                 x, y, w, h = region["rectangle"]
-                regionImage = imageGray[y-5:(y+h+5),x-5:(x+w+5)].copy()
-                #prediction, propability = self.signDetector.detectSign(regionImage)
-                #print("Prediction: %d\tPropability%.2f" % (prediction, propability))
-                #self.debugger.writePreditcionOnImage(image, region, prediction, propability, (0,255,0))
+
+                if x < 5:
+                    x = 5
+                if y < 5:
+                    y = 5
+
+
+                regionImage = imagePreProcessed[y-5:(y+h+5),x-5:(x+w+5)].copy()
+                prediction, propability = self.signDetector.detectSign(regionImage)
+                print("Prediction: %d\tPropability%.2f" % (prediction, propability))
+                self.debugger.writePreditcionOnImage(image, region["rectangle"], prediction, propability, (0,255,0))
 
             self.debugger.debugImage("ROIs", image)
