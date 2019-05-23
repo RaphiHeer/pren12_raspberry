@@ -1,5 +1,6 @@
 import argparse
 from threading import Thread
+from multiprocessing import Process
 from ConfigReader import *
 from ImageProcessing import *
 from ImageProcessing.ImageDebugger import *
@@ -18,17 +19,29 @@ else:
     configPath = "Ressources/config.json"
 print("Load config from: " + configPath)
 
+
+def createVideoStream(videoConfig):
+    if videoConfig["type"] == "picam":
+        return PiVideoStream(videoConfig)
+    elif videoConfig["type"] == "file":
+        return FileVideoStream(videoConfig)
+
+
 def runMainApplication(configPath):
     config = ConfigReader(configPath)
 
     debugger = ImageDebugger(config.getApplicationSettings)
 
-    stream = FileVideoStream(config.getImageStreamSettings())
+    stream = createVideoStream(config.getImageStreamSettings())
     stream = stream.start()
 
     factory = ImageProcessorFactory()
 
     imageProcessors = factory.createImageProcessors(config.imageProcessors, debugger)
+
+    processList = []
+    for imageProcessor in imageProcessors:
+        processList.append(Process())
     imageProcessors[0].processVideoStream(stream, "")
 
 if __name__ == '__main__':
