@@ -3,6 +3,7 @@ from .ImageVideoStreamBase import *
 from picamera.array import PiRGBArray
 from picamera import PiCamera
 from threading import Thread
+from multiprocessing import Lock
 import cv2
 
 class PiVideoStream(ImageVideoStreamBase):
@@ -20,6 +21,8 @@ class PiVideoStream(ImageVideoStreamBase):
         # if the thread should be stopped
         self.frame = None
         self.stopped = False
+
+        self.lock = Lock()
 
     def start(self):
         # start the thread to read frames from the video stream
@@ -45,8 +48,11 @@ class PiVideoStream(ImageVideoStreamBase):
                 return
 
     def read(self):
+        self.lock.acquire()
+        retFrame = self.frame
+        self.lock.release()
         # return the frame most recently read
-        return self.frame
+        return retFrame
 
     def stop(self):
         # indicate that the thread should be stopped

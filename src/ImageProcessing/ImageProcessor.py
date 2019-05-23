@@ -52,9 +52,9 @@ class ImageProcessor:
                     y = 5
 
 
-                regionImage = imagePreProcessed[y-5:(y+h+5),x-5:(x+w+5)].copy()
-                prediction, propability = self.signDetector.detectSign(regionImage)
-                print("Prediction: %d\tPropability%.2f" % (prediction, propability))
-                self.debugger.writePreditcionOnImage(image, region["rectangle"], prediction, propability, (0,255,0))
+                #regionImage = imagePreProcessed[y-5:(y+h+5),x-5:(x+w+5)].copy()
+                #prediction, propability = self.signDetector.detectSign(regionImage)
+                #print("Prediction: %d\tPropability%.2f" % (prediction, propability))
+                #self.debugger.writePreditcionOnImage(image, region["rectangle"], prediction, propability, (0,255,0))
 
             self.debugger.debugImage("ROIs", image)
