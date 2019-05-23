@@ -34,6 +34,26 @@
                 "type": "DnnMnist",
                 "path": "model/mnist_trained_model.h5"
             }
-        }
+        },
+	{
+	    "id": "2",
+	    "type": "numberDetection",
+	    "preProcessing": {
+		"type": "gammaCorrection",
+		"filter": "5.5"
+	    },
+	    "segmentation": {
+		"type": "canny",
+		"minThreshold": "250",
+		"maxThreshold": "100"
+	    },
+	    "featureDetection": {
+		"type": "findContours"
+	    },
+	    "signDetection": {
+		"type": "DnnMnist",
+		"path": "model/mnist_trained_model.h5"
+	    }
+	}
     ]
 }

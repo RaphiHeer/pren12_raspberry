@@ -47,9 +47,10 @@ class PiVideoStream(ImageVideoStreamBase):
         for f in self.stream:
             # grab the frame from the stream and clear the stream in
             # preparation for the next frame
+            self.lock.acquire()
             self.frame = f.array
             self.rawCapture.truncate(0)
-
+            self.lock.release()
             # if the thread indicator variable is set, stop the thread
             # and resource camera resources
             if self.stopped:

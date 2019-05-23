@@ -7,7 +7,7 @@ from ImageProcessing.ImageDebugger import *
 from ImageProcessing.ImageProcessorFactory import *
 from ImageStream import *
 from ImageStream.FileVideoStream import *
-
+from ImageStream.PiVideoStream import *
 
 ap = argparse.ArgumentParser()
 ap.add_argument("-c", "--config", required=False, help="path to input image")
@@ -41,8 +41,10 @@ def runMainApplication(configPath):
 
     processList = []
     for imageProcessor in imageProcessors:
-        processList.append(Process())
-    imageProcessors[0].processVideoStream(stream, "")
+        processList.append(Process(target=imageProcessor.processVideoStream, args=(stream, "")))
+    # imageProcessors[0].processVideoStream(stream, "")
+    for process in processList:
+        process.start()
 
 if __name__ == '__main__':
     runMainApplication(configPath)
