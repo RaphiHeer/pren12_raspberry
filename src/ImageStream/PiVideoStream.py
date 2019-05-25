@@ -4,7 +4,9 @@ from picamera.array import PiRGBArray
 from picamera import PiCamera
 from threading import Thread
 from multiprocessing import Lock
+from imutils.video import FPS
 import cv2
+
 
 class PiVideoStream(ImageVideoStreamBase):
     def __init__(self, settings):
@@ -33,6 +35,11 @@ class PiVideoStream(ImageVideoStreamBase):
         self.frame = None
         self.stopped = False
 
+        # Count images and FPS
+        self.imagesReaded = 0
+        self.fps = FPS().start()
+
+        # Create lock
         self.lock = Lock()
 
     def start(self):
@@ -62,6 +69,10 @@ class PiVideoStream(ImageVideoStreamBase):
     def read(self):
         self.lock.acquire()
         retFrame = self.frame
+        self.fps.update()
+        self.imagesReaded += 1
+        if self.imagesReaded % 50 == 0:
+            print(self.fps.fps())
         self.lock.release()
         # return the frame most recently read
         return retFrame
