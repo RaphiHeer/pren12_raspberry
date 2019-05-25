@@ -4,6 +4,7 @@ from .ImagePreProcessing.ImagePreProcessorNone import *
 from .ImagePreProcessing.ImagePreProcessorGammaCorrection import *
 from .ImageSegmentation.ImageSegmentationBase import *
 from .ImageSegmentation.ImageSegmentationCanny import *
+from .ImageSegmentation.ImageSegmentationThreshold import *
 from .ImageFeatureDetection.ImageFeatureDetectorBase import *
 from .ImageFeatureDetection.ImageFeatureDetectorFindContours import *
 from .ImageSignDetection.ImageSignDetectorBase import *
@@ -40,6 +41,8 @@ class ImageProcessorFactory:
     def createImageSegmentation(self, settings):
         if settings['type'] == 'canny':
             imageSegmentation = ImageSegmentationCanny(settings)
+        elif settings['type'] == 'threshold':
+            imageSegmentation = ImageSegmentationThreshold(settings)
 
         return imageSegmentation
 

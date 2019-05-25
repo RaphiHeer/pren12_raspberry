@@ -94,6 +94,10 @@ class ConfigReader:
         if segmentationSettings["type"] == "canny":
             segmentationSettings["threshold1"] = jsonImageSegmentation.get("threshold1", 200)
             segmentationSettings["threshold2"] = jsonImageSegmentation.get("threshold2", 210)
+        elif segmentationSettings["type"] == "threshold":
+            segmentationSettings["threshold1"] = jsonImageSegmentation.get("threshold1", 150)
+            segmentationSettings["threshold2"] = jsonImageSegmentation.get("threshold2", 255)
+            segmentationSettings["threshMode"] = jsonImageSegmentation.get("threshMode", "binary")
 
         return segmentationSettings
 
@@ -104,6 +108,7 @@ class ConfigReader:
         if featureDetectionSettings["type"] == "findContours":
             featureDetectionSettings["mode"] = jsonImageFeatureDetection.get("mode", "RETR_EXTERNAL")
             featureDetectionSettings["method"] = jsonImageFeatureDetection.get("method", "CHAIN_APPROX_SIMPLE")
+
 
         return featureDetectionSettings
 

@@ -21,10 +21,9 @@
                 "gamma": 2
             },
             "segmentation": {
-                "type": "threshold",
-                "threshold1": 50,
-                "threshold2": 150,
-                "threshMode": "binary"
+                "type": "canny",
+                "minThreshold": 250,
+                "maxThreshold": 50
             },
             "featureDetection": {
                 "type": "findContours"

@@ -44,31 +44,32 @@ class ImageFeatureDetectionFindContours(ImageFeatureDetectorBase):
                  (self.max_x, (int(self.m_stop_bottom * self.max_x + self.c_stop_bottom))), (0, 0, 255))
         """
         cnts = cv2.findContours(image.copy(), self.mode, self.method)[1]
+
         for c in cnts:
             rect = cv2.boundingRect(c)
-            print(rect)
+            #print(rect)
             x, y, w, h = rect
 
             if w > h:
-                #self.drawContour(debugDrawImage, c, rect, (0, 0, 255))
+                self.drawContour(debugDrawImage, c, rect, (0, 0, 255))
                 continue
 
             heigthWidthRatio = h / w
             if 5 < heigthWidthRatio < 1.5:
-                #self.drawContour(debugDrawImage, c, rect, (0, 100, 240))
+                self.drawContour(debugDrawImage, c, rect, (0, 100, 240))
                 continue
 
             if h < 15:
-                #self.drawContour(debugDrawImage, c, rect, (0, 120, 200))
+                self.drawContour(debugDrawImage, c, rect, (0, 120, 200))
                 continue
 
             if h > 80:
-                #self.drawContour(debugDrawImage, c, rect, (0, 150, 180))
+                self.drawContour(debugDrawImage, c, rect, (0, 150, 180))
                 continue
 
-            #if not self.isInSignRange(x, y):
-                #self.drawContour(debugDrawImage, c, rect, (50, 150, 180))
-            #    continue
+            if not self.isInSignRange(x, y):
+                self.drawContour(debugDrawImage, c, rect, (50, 150, 180))
+                continue
 
 
             region = {}

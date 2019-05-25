@@ -1,0 +1,59 @@
+{
+    "applicationSettings": {
+        "logfile": "data.log",
+        "createLogs": false,
+        "logfileRandomPrefix": true,
+        "showImages": true,
+        "saveImages": false
+    },
+
+    "imageStream": {
+        "type": "picam",
+        "shutterTime": 4000,
+        "resolutionW": 640,
+        "resolutionH": 480
+    },
+
+    "imageProcessors": [
+        {
+            "id": "1",
+            "type": "numberDetection",
+            "preProcessing": {
+                "type": "gammaCorrection",
+                "filter": "5.5"
+            },
+            "segmentation": {
+                "type": "canny",
+                "minThreshold": "250",
+                "maxThreshold": "100"
+            },
+            "featureDetection": {
+                "type": "findContours"
+            },
+            "signDetection": {
+                "type": "DnnMnist",
+                "path": "model/mnist_trained_model.h5"
+            }
+        },
+	    {
+          "id": "2",
+          "type": "numberDetection",
+          "preProcessing": {
+            "type": "gammaCorrection",
+            "filter": "5.5"
+          },
+          "segmentation": {
+            "type": "canny",
+            "minThreshold": "250",
+            "maxThreshold": "100"
+	    },
+          "featureDetection": {
+            "type": "findContours"
+	    },
+          "signDetection": {
+            "type": "DnnMnist",
+            "path": "model/mnist_trained_model.h5"
+	    }
+	}
+    ]
+}

@@ -27,6 +27,18 @@ def createVideoStream(videoConfig):
         return FileVideoStream(videoConfig)
 
 
+def createProcesses(imageProcessors, stream):
+    processList = []
+    for imageProcessor in imageProcessors:
+        processList.append(Process(target=imageProcessor.processVideoStream, args=(stream, "")))
+
+    return processList
+
+def createThreads():
+    threadList = []
+
+    return threadList
+
 def runMainApplication(configPath):
     config = ConfigReader(configPath)
 
@@ -39,12 +51,11 @@ def runMainApplication(configPath):
 
     imageProcessors = factory.createImageProcessors(config.imageProcessors, debugger)
 
-    processList = []
-    for imageProcessor in imageProcessors:
-        processList.append(Process(target=imageProcessor.processVideoStream, args=(stream, "")))
-    # imageProcessors[0].processVideoStream(stream, "")
-    for process in processList:
-        process.start()
+    #processList = createProcesses(imageProcessors, stream)
+
+    imageProcessors[0].processVideoStream(stream, "")
+    #for process in processList:
+    #    process.start()
 
 if __name__ == '__main__':
     runMainApplication(configPath)

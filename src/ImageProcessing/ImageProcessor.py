@@ -31,10 +31,10 @@ class ImageProcessor:
             #cv2.waitKey()
 
             imageGray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-            self.debugger.debugImage("From Camera", image)
+            #self.debugger.debugImage("From Camera", image)
 
             imagePreProcessed = self.preProcessor.preProcessImage(imageGray)
-            self.debugger.debugImage("After PreProcessing", imagePreProcessed)
+            #self.debugger.debugImage("After PreProcessing", imagePreProcessed)
 
             imageEdge = self.segmentation.segmentImage(imagePreProcessed)
             self.debugger.debugImage("After edgeDetection", imageEdge)

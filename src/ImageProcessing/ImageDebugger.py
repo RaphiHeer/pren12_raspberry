@@ -17,6 +17,7 @@ class ImageDebugger:
     def debugImage(self, caption, image):
         if(self.showImage):
             cv2.imshow(caption, image)
+            cv2.waitKey(1)
         if(self.saveImage):
             filename = caption + 'png'
             cv2.imwrite(filename, image)

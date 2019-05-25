@@ -6,3 +6,5 @@ class ImageSignDetectorBase:
 
     def detectSign(self, image):
         raise NotImplemented("detectSign from abstract ImageSignDetectionBase not implemented")
+
+    #def determineDigitColor(self):
