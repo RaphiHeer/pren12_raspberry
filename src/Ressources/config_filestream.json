@@ -8,7 +8,7 @@
     },
     "imageStream": {
         "type": "file",
-        "path": "imageSeries/shutter4/",
+        "path": "imageSeries/led07/",
         "framerate": 10
     },
 
@@ -18,13 +18,12 @@
             "type": "numberDetection",
             "preProcessing": {
                 "type": "gammaCorrection",
-                "gamma": 2
+                "gamma": 3
             },
             "segmentation": {
-                "type": "threshold",
+                "type": "canny",
                 "threshold1": 50,
-                "threshold2": 150,
-                "threshMode": "binary"
+                "threshold2": 250
             },
             "featureDetection": {
                 "type": "findContours"

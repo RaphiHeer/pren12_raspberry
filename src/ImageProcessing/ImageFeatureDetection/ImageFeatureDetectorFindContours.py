@@ -13,8 +13,8 @@ class ImageFeatureDetectionFindContours(ImageFeatureDetectorBase):
         self.infoStopDividerIncline = 3
         self.infoStopDividerOffset = 200
 
-        self.m_info_top = 0.52  # y2 - y1 / 250
-        self.c_info_top = 10
+        self.m_info_top = 0.45  # y2 - y1 / 250
+        self.c_info_top = -70
 
         self.m_info_bottom = 0.06  # 180 - 165 / 250 - 0
         self.c_info_bottom = 175
@@ -22,8 +22,8 @@ class ImageFeatureDetectionFindContours(ImageFeatureDetectorBase):
         self.m_stop_top = -0.52  # 190 - y1 / 250
         self.c_stop_top = 310
 
-        self.m_stop_bottom = -1.1  # 200 - y1 / 250
-        self.c_stop_bottom = 500
+        self.m_stop_bottom = -1.15  # 200 - y1 / 250
+        self.c_stop_bottom = 590
 
         self.max_x = 250
 
@@ -33,7 +33,7 @@ class ImageFeatureDetectionFindContours(ImageFeatureDetectorBase):
     def detectFeatures(self, image, debugDrawImage = None):
         RegionsOfInterest = []
 
-        """"
+
         cv2.line(debugDrawImage, (0, self.c_info_top),
                  (self.max_x, (int(self.m_info_top * self.max_x + self.c_info_top))), (255, 0, 0))
         cv2.line(debugDrawImage, (0, self.c_info_bottom),
@@ -42,7 +42,7 @@ class ImageFeatureDetectionFindContours(ImageFeatureDetectorBase):
                  (self.max_x, (int(self.m_stop_top * self.max_x + self.c_stop_top))), (0, 0, 255))
         cv2.line(debugDrawImage, (0, self.c_stop_bottom),
                  (self.max_x, (int(self.m_stop_bottom * self.max_x + self.c_stop_bottom))), (0, 0, 255))
-        """
+
         cnts = cv2.findContours(image.copy(), self.mode, self.method)[1]
 
         for c in cnts:
@@ -67,6 +67,14 @@ class ImageFeatureDetectionFindContours(ImageFeatureDetectorBase):
                 self.drawContour(debugDrawImage, c, rect, (0, 150, 180))
                 continue
 
+            if w > 50:
+                self.drawContour(debugDrawImage, c, rect, (0, 120, 200))
+                continue
+
+            if w < 10:
+                self.drawContour(debugDrawImage, c, rect, (0, 150, 180))
+                continue
+
             if not self.isInSignRange(x, y):
                 self.drawContour(debugDrawImage, c, rect, (50, 150, 180))
                 continue
@@ -76,12 +84,14 @@ class ImageFeatureDetectionFindContours(ImageFeatureDetectorBase):
             region["rectangle"] = rect
             region["isInfoSignal"] = self.isInfoSignal(x, y)
 
-            """"
+            if debugDrawImage is not None:
+                cv2.putText(debugDrawImage, ("H: %d W: %d" % (h, w)), (x + 20, y + h + 10), cv2.FONT_HERSHEY_SIMPLEX, 1,
+                            (0, 255, 0), 2)
             if region["isInfoSignal"]:
                 self.drawContour(debugDrawImage, c, rect, (0, 255, 0))
             else:
                 self.drawContour(debugDrawImage, c, rect, (0, 210, 0))
-            """
+
             RegionsOfInterest.append(region)
 
         return RegionsOfInterest

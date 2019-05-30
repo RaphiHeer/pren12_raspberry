@@ -1,23 +1,14 @@
 import cv2
 
 class ImageDebugger:
-    def __init__(self, configM):
-        """"
-        if isinstance(showImage, str):
-            self.showImage = (showImage == 'true')
-
-
-        if isinstance(saveImage, str):
-            self.saveImage = (saveImage == 'true')
-        """
-
-        self.showImage = True
+    def __init__(self, config):
+        self.showImage = config["showImages"]
+        #self.saveImage = config["saveImages"]
         self.saveImage = False
 
     def debugImage(self, caption, image):
         if(self.showImage):
             cv2.imshow(caption, image)
-            cv2.waitKey(1)
         if(self.saveImage):
             filename = caption + 'png'
             cv2.imwrite(filename, image)

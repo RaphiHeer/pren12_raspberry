@@ -27,21 +27,18 @@ class ImageProcessor:
         while True:
             print("Read next image")
             image = videoStream.read()
-            cv2.imshow("Test", image)
-            #cv2.waitKey()
 
             imageGray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-            #self.debugger.debugImage("From Camera", image)
+            self.debugger.debugImage("From Camera", image)
 
             imagePreProcessed = self.preProcessor.preProcessImage(imageGray)
-            #self.debugger.debugImage("After PreProcessing", imagePreProcessed)
+            self.debugger.debugImage("After PreProcessing", imagePreProcessed)
 
             imageEdge = self.segmentation.segmentImage(imagePreProcessed)
             self.debugger.debugImage("After edgeDetection", imageEdge)
 
             regionsOfInterest = self.featureDetector.detectFeatures(imageEdge, image)
             self.debugger.debugImage("Contours", image)
-            #self.debugger.drawContoursOnImage(image, regionsOfInterest, (0,255,0))
 
             for region in regionsOfInterest:
                 x, y, w, h = region["rectangle"]
@@ -50,11 +47,12 @@ class ImageProcessor:
                     x = 5
                 if y < 5:
                     y = 5
+                #elif y > (image.shape[1] - 5):
+                #    y -= 5
 
-
-                #regionImage = imagePreProcessed[y-5:(y+h+5),x-5:(x+w+5)].copy()
-                #prediction, propability = self.signDetector.detectSign(regionImage)
-                #print("Prediction: %d\tPropability%.2f" % (prediction, propability))
-                #self.debugger.writePreditcionOnImage(image, region["rectangle"], prediction, propability, (0,255,0))
+                regionImage = imagePreProcessed[y-5:(y+h+5),x-5:(x+w+5)].copy()
+                prediction, probability = self.signDetector.detectSign(regionImage, self.debugger)
+                self.debugger.writePreditcionOnImage(image, region["rectangle"], prediction, probability, (0,255,0))
 
             self.debugger.debugImage("ROIs", image)
+            cv2.waitKey()

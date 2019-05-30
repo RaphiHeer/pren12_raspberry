@@ -3,7 +3,7 @@
         "logfile": "data.log",
         "createLogs": false,
         "logfileRandomPrefix": true,
-        "showImages": true,
+        "showImages": false,
         "saveImages": false
     },
 
@@ -24,8 +24,8 @@
             },
             "segmentation": {
                 "type": "canny",
-                "minThreshold": "250",
-                "maxThreshold": "100"
+                "threshold1": 250,
+                "threshold2": 50
             },
             "featureDetection": {
                 "type": "findContours"

@@ -5,6 +5,7 @@ from picamera import PiCamera
 from threading import Thread
 from multiprocessing import Lock
 from imutils.video import FPS
+import time
 import cv2
 
 
@@ -37,7 +38,7 @@ class PiVideoStream(ImageVideoStreamBase):
 
         # Count images and FPS
         self.imagesReaded = 0
-        self.fps = FPS().start()
+        self.startMeasureTime = 0
 
         # Create lock
         self.lock = Lock()
@@ -46,6 +47,7 @@ class PiVideoStream(ImageVideoStreamBase):
         # start the thread to read frames from the video stream
         t = Thread(target=self.update, args=())
         t.daemon = True
+        self.startMeasureTime = time.time()
         t.start()
         return self
 
@@ -69,10 +71,11 @@ class PiVideoStream(ImageVideoStreamBase):
     def read(self):
         self.lock.acquire()
         retFrame = self.frame
-        self.fps.update()
         self.imagesReaded += 1
-        if self.imagesReaded % 50 == 0:
-            print(self.fps.fps())
+        if self.imagesReaded % 150 == 0:
+            totalTime = time.time() - self.startMeasureTime
+            fps = self.imagesReaded / totalTime
+            print("FPS: " + str(fps))
         self.lock.release()
         # return the frame most recently read
         return retFrame

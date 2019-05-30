@@ -11,17 +11,24 @@ class ImageSignDetectionDnnMnist(ImageSignDetectorBase):
         self.modelPath = settings['path']
         self.model = load_model(self.modelPath)
 
-    def detectSign(self, image):
-        #cv2.imshow("BeforeThresh", image)
-        im_cutted_and_inverted = cv2.threshold(image.copy(), 128, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)[1]
-        im_resize1 = cv2.resize(im_cutted_and_inverted, (28, 28))
+    def detectSign(self, image, debugger = None):
+        im_cutted = cv2.threshold(image.copy(), 128, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)[1]
+        im_resize1 = cv2.resize(im_cutted, (28, 28))
+
+        digitColor = self.determineDigitColor(im_resize1)
+        if digitColor == self.BLACK_DIGIT:
+            im_resize1 = cv2.invert(im_resize1)
+
         im_resize2 = resize(im_resize1, (28, 28), mode='constant')
-        im_final = im_resize2.reshape(1, 28, 28, 1)
-        #cv2.imshow("contour", im_resize2)
+        #cv2.imshow("Contour for MNIST", im_resize2)
         #cv2.waitKey()
+        im_final = im_resize2.reshape(1, 28, 28, 1)
+
         ans = self.model.predict(im_final)
 
         prediction = ans[0].tolist().index(max(ans[0].tolist()))
-        propability = ans[0].tolist()[prediction] * 100
+        probability = ans[0].tolist()[prediction] * 100
 
-        return [prediction, propability]
+        print("%s digit detected. Digit was %d with a probability of %.2f" % (digitColor, prediction, probability))
+
+        return [prediction, probability]

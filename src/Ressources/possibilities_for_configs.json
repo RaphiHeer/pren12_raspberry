@@ -37,8 +37,8 @@
             "segmentation": [
               {
                 "type": "canny",
-                "minThreshold": "250",
-                "maxThreshold": "100"
+                "threshold1": "250",
+                "threshold2": "50"
               },
               {
                 "type": "threshold",

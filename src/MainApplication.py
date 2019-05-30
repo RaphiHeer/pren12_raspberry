@@ -1,4 +1,5 @@
 import argparse
+import importlib
 from threading import Thread
 from multiprocessing import Process
 from ConfigReader import *
@@ -7,7 +8,11 @@ from ImageProcessing.ImageDebugger import *
 from ImageProcessing.ImageProcessorFactory import *
 from ImageStream import *
 from ImageStream.FileVideoStream import *
-from ImageStream.PiVideoStream import *
+try:
+    from ImageStream.PiVideoStream import *
+except ImportError:
+    print("PiCamera is not installed. If this is not a raspberry pi, this is ok.")
+
 
 ap = argparse.ArgumentParser()
 ap.add_argument("-c", "--config", required=False, help="path to input image")
@@ -42,7 +47,7 @@ def createThreads():
 def runMainApplication(configPath):
     config = ConfigReader(configPath)
 
-    debugger = ImageDebugger(config.getApplicationSettings)
+    debugger = ImageDebugger(config.getApplicationSettings())
 
     stream = createVideoStream(config.getImageStreamSettings())
     stream = stream.start()
