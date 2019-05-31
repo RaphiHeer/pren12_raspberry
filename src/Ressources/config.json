@@ -24,8 +24,8 @@
             },
             "segmentation": {
                 "type": "canny",
-                "threshold1": "250",
-                "threshold2": "50"
+                "threshold1": 250,
+                "threshold2": 50
             },
             "featureDetection": {
                 "type": "findContours"

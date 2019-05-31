@@ -25,7 +25,7 @@ class ImageFeatureDetectionFindContours(ImageFeatureDetectorBase):
         self.m_stop_bottom = -1.15  # 200 - y1 / 250
         self.c_stop_bottom = 590
 
-        self.max_x = 250
+        self.max_x = 400
 
 
         return
@@ -55,7 +55,7 @@ class ImageFeatureDetectionFindContours(ImageFeatureDetectorBase):
                 continue
 
             heigthWidthRatio = h / w
-            if 5 < heigthWidthRatio < 1.5:
+            if 1.5 > heigthWidthRatio or heigthWidthRatio > 5:
                 self.drawContour(debugDrawImage, c, rect, (0, 100, 240))
                 continue
 
@@ -86,7 +86,7 @@ class ImageFeatureDetectionFindContours(ImageFeatureDetectorBase):
 
             if debugDrawImage is not None:
                 cv2.putText(debugDrawImage, ("H: %d W: %d" % (h, w)), (x + 20, y + h + 10), cv2.FONT_HERSHEY_SIMPLEX, 1,
-                            (0, 255, 0), 2)
+                            (0, 255, 0), 1)
             if region["isInfoSignal"]:
                 self.drawContour(debugDrawImage, c, rect, (0, 255, 0))
             else:

@@ -20,7 +20,7 @@
             "type": "numberDetection",
             "preProcessing": {
                 "type": "gammaCorrection",
-                "filter": "5.5"
+                "filter": "2.5"
             },
             "segmentation": {
                 "type": "canny",
@@ -35,17 +35,37 @@
                 "path": "model/mnist_trained_model.h5"
             }
         },
-	    {
-          "id": "2",
+      {
+        "id": "2",
+        "type": "numberDetection",
+        "preProcessing": {
+          "type": "gammaCorrection",
+          "filter": "2.5"
+        },
+        "segmentation": {
+          "type": "canny",
+          "minThreshold": 250,
+          "maxThreshold": 100
+        },
+        "featureDetection": {
+          "type": "findContours"
+        },
+        "signDetection": {
+          "type": "DnnMnist",
+          "path": "model/mnist_trained_model.h5"
+        }
+      },
+      {
+          "id": "3",
           "type": "numberDetection",
           "preProcessing": {
             "type": "gammaCorrection",
-            "filter": "5.5"
+            "filter": "2.5"
           },
           "segmentation": {
             "type": "canny",
-            "minThreshold": "250",
-            "maxThreshold": "100"
+            "minThreshold": 250,
+            "maxThreshold": 100
 	    },
           "featureDetection": {
             "type": "findContours"

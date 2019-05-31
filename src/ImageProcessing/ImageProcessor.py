@@ -3,6 +3,7 @@ from .ImagePreProcessing.ImagePreProcessorBase import *
 from .ImageSegmentation.ImageSegmentationBase import *
 from .ImageFeatureDetection.ImageFeatureDetectorBase import *
 from .ImageSignDetection.ImageSignDetectorBase import *
+
 import cv2
 
 class ImageProcessor:
@@ -25,6 +26,7 @@ class ImageProcessor:
 
     def processVideoStream(self, videoStream, boardConnector):
         while True:
+
             print("Read next image")
             image = videoStream.read()
 
@@ -40,19 +42,32 @@ class ImageProcessor:
             regionsOfInterest = self.featureDetector.detectFeatures(imageEdge, image)
             self.debugger.debugImage("Contours", image)
 
+            mostLeftXpos = 10000
+            mostLeftPrediction = None
+
             for region in regionsOfInterest:
-                x, y, w, h = region["rectangle"]
 
-                if x < 5:
-                    x = 5
-                if y < 5:
-                    y = 5
-                #elif y > (image.shape[1] - 5):
-                #    y -= 5
+                xPos = region["rectangle"][0]
+                print("X Position: %d" % xPos)
 
-                regionImage = imagePreProcessed[y-5:(y+h+5),x-5:(x+w+5)].copy()
-                prediction, probability = self.signDetector.detectSign(regionImage, self.debugger)
-                self.debugger.writePreditcionOnImage(image, region["rectangle"], prediction, probability, (0,255,0))
+                # Send image region to sign detector
+                prediction, probability = self.signDetector.detectSign(imagePreProcessed, region["rectangle"], self.debugger)
 
+                # Depending on the propability, send image to arduino or not
+                if probability > 80 and xPos < mostLeftXpos:
+                    mostLeftPrediction = {"prediction": prediction, "probability": probability,
+                                          "isInfoSignal": region["isInfoSignal"], "rectangle": region["rectangle"]}
+                else:
+                    self.debugger.writePreditcionOnImage(image, region["rectangle"], prediction, probability, (0, 0, 255))
+
+            if mostLeftPrediction is not None:
+                    print("Most left signal with digit: %d and a prob of %.2f is a%s" %
+                          (mostLeftPrediction["prediction"], mostLeftPrediction["probability"],
+                           ("n info sign" if mostLeftPrediction["isInfoSignal"] else " stop sign")))
+
+                    boardConnector.numberDetected(mostLeftPrediction["prediction"], mostLeftPrediction["isInfoSignal"])
+
+                    self.debugger.writePreditcionOnImage(image, mostLeftPrediction["rectangle"], mostLeftPrediction["prediction"], mostLeftPrediction["probability"], (0, 255, 0))
             self.debugger.debugImage("ROIs", image)
-            cv2.waitKey()
+            self.debugger.imageProcessed(image)
+

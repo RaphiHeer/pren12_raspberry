@@ -28,7 +28,15 @@ class ImageDebugger:
     def writePreditcionOnImage(self, image, region, prediction, propability, color):
         if self.showImage | self.saveImage:
             x, y, w, h = region
-            cv2.putText(image, ("%i" % prediction), (x-20, y-10), cv2.FONT_HERSHEY_SIMPLEX, 1, color, 2)
-            cv2.putText(image, ("%.3f %%" % propability), (x + 50, y-10), cv2.FONT_HERSHEY_SIMPLEX, 1, color, 2)
+            cv2.putText(image, ("%i" % prediction), (x-20, y-10), cv2.FONT_HERSHEY_SIMPLEX, 1, color, 1, 2)
+            cv2.putText(image, ("%.3f %%" % propability), (x + 50, y-10), cv2.FONT_HERSHEY_SIMPLEX, 1, color, 1, 2)
 
         return
+
+    def closeImageDebugging(self):
+        if self.showImage:
+            cv2.destroyAllWindows()
+
+    def imageProcessed(self, image):
+        if self.showImage:
+            cv2.waitKey(1)

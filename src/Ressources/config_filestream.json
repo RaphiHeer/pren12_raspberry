@@ -18,12 +18,12 @@
             "type": "numberDetection",
             "preProcessing": {
                 "type": "gammaCorrection",
-                "gamma": 3
+                "gamma": 2.5
             },
             "segmentation": {
                 "type": "canny",
-                "threshold1": 50,
-                "threshold2": 250
+                "threshold1": 10,
+                "threshold2": 230
             },
             "featureDetection": {
                 "type": "findContours"

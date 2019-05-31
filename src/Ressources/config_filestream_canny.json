@@ -18,7 +18,7 @@
             "type": "numberDetection",
             "preProcessing": {
                 "type": "gammaCorrection",
-                "gamma": 2
+                "gamma": 1
             },
             "segmentation": {
                 "type": "canny",
