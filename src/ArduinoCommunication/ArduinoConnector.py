@@ -41,7 +41,7 @@ class ArduinoConnector:
         self.GPIO_UART_RXT = 15
 
     def initGPIOPins(self):
-        GPIO.setMode(GPIO.BCM)
+        GPIO.setmode(GPIO.BCM)
 
         GPIO.setup(self.GPIO_NUMBER_BIT_0, GPIO.OUT)
         GPIO.setup(self.GPIO_NUMBER_BIT_1, GPIO.OUT)
@@ -96,3 +96,8 @@ class ArduinoConnector:
         GPIO.output(self.GPIO_NUMBER_BIT_3, False)
         GPIO.output(self.GPIO_IS_INFO_SIGN, False)
         GPIO.output(self.GPIO_SIGN_INTERRUPT, False)
+
+    def shutdownConnection(self):
+        if GPIOsImported is True:
+            print("Cleanup GPIO...")
+            GPIO.cleanup()

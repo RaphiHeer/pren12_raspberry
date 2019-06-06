@@ -8,7 +8,7 @@
     },
     "imageStream": {
         "type": "file",
-        "path": "imageSeries/led07/",
+        "path": "imageSeries/led05/",
         "framerate": 10
     },
 
@@ -18,19 +18,19 @@
             "type": "numberDetection",
             "preProcessing": {
                 "type": "gammaCorrection",
-                "gamma": 2.5
+                "gamma": 2
             },
             "segmentation": {
                 "type": "canny",
                 "threshold1": 10,
-                "threshold2": 230
+                "threshold2": 250
             },
             "featureDetection": {
                 "type": "findContours"
             },
             "signDetection": {
                 "type": "DnnMnist",
-                "path": "model/mnist_trained_model.h5"
+                "path": "model/mnist_cnn.h5"
             }
         }
     ]

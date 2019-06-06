@@ -2,11 +2,12 @@
 from .ImageVideoStreamBase import *
 import cv2
 import time
+from multiprocessing import Lock
 from os import listdir
 from os.path import isfile, join
 
 class FileVideoStream(ImageVideoStreamBase):
-	def __init__(self, settings):
+	def __init__(self, settings, imageQueue):
 		# initialize the camera and stream
 		print(settings)
 		self.framerate = settings['framerate']
@@ -24,13 +25,21 @@ class FileVideoStream(ImageVideoStreamBase):
 		print("LastFrameRead: %.3f secs" % (time.time() - self.lastFrameRead))
 		time.sleep(5)
 
-	def start(self):
+	def start(self, useMultiProcessing = False):
+		self.useMultiProcessing = useMultiProcessing
+		if useMultiProcessing:
+			self.lock = Lock()
 		# start the thread to read frames from the video stream
 		return self
 
 	def read(self):
 		# return the frame most recently read
+		if self.useMultiProcessing:
+			self.lock.acquire()
 		filename = self.path + self.onlyfiles.pop(0)
+		if self.useMultiProcessing:
+			self.lock.release()
+
 		frame = cv2.imread(filename)
 
 		now = time.time()

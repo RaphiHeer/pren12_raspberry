@@ -1,7 +1,7 @@
 
 
 class ImageVideoStreamBase:
-    def __init__(self, settings):
+    def __init__(self, settings, imageQueue):
         print("Init ImageVideoStreamBase")
 
     def start(self):
@@ -11,4 +11,4 @@ class ImageVideoStreamBase:
         raise NotImplemented("read from abstract ImageVideoStreamBase not implemented")
 
     def stop(self):
-        raise NotImplemented("stop from abstract ImageVideoStreamBase not implemented")
+        raise NotImplemented("stop from abstract ImageViMadeoStreamBase not implemented")

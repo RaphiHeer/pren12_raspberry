@@ -3,7 +3,7 @@ from .ImagePreProcessing.ImagePreProcessorBase import *
 from .ImageSegmentation.ImageSegmentationBase import *
 from .ImageFeatureDetection.ImageFeatureDetectorBase import *
 from .ImageSignDetection.ImageSignDetectorBase import *
-
+import time
 import cv2
 
 class ImageProcessor:
@@ -25,10 +25,14 @@ class ImageProcessor:
         self.debugger = debugger
 
     def processVideoStream(self, videoStream, boardConnector):
+
         while True:
 
             print("Read next image")
+            beforeRead = time.time()
             image = videoStream.read()
+            afterRead = time.time()
+            print("Time too read frame: %.3f" % (afterRead - beforeRead))
 
             imageGray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
             self.debugger.debugImage("From Camera", image)
@@ -39,7 +43,7 @@ class ImageProcessor:
             imageEdge = self.segmentation.segmentImage(imagePreProcessed)
             self.debugger.debugImage("After edgeDetection", imageEdge)
 
-            regionsOfInterest = self.featureDetector.detectFeatures(imageEdge, image)
+            regionsOfInterest = self.featureDetector.detectFeatures(imagePreProcessed, imageEdge, image)
             self.debugger.debugImage("Contours", image)
 
             mostLeftXpos = 10000
@@ -51,7 +55,7 @@ class ImageProcessor:
                 print("X Position: %d" % xPos)
 
                 # Send image region to sign detector
-                prediction, probability = self.signDetector.detectSign(imagePreProcessed, region["rectangle"], self.debugger)
+                prediction, probability = self.signDetector.detectSign(region['image'], region["rectangle"], self.debugger)
 
                 # Depending on the propability, send image to arduino or not
                 if probability > 80 and xPos < mostLeftXpos:
@@ -70,4 +74,5 @@ class ImageProcessor:
                     self.debugger.writePreditcionOnImage(image, mostLeftPrediction["rectangle"], mostLeftPrediction["prediction"], mostLeftPrediction["probability"], (0, 255, 0))
             self.debugger.debugImage("ROIs", image)
             self.debugger.imageProcessed(image)
+            image = None
 

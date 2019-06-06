@@ -3,13 +3,13 @@
         "logfile": "data.log",
         "createLogs": false,
         "logfileRandomPrefix": true,
-        "showImages": true,
+        "showImages": false,
         "saveImages": false
     },
 
     "imageStream": {
         "type": "picam",
-        "shutterTime": 4000,
+        "shutterTime": 14000,
         "resolutionW": 640,
         "resolutionH": 480
     },
@@ -20,7 +20,7 @@
             "type": "numberDetection",
             "preProcessing": {
                 "type": "gammaCorrection",
-                "filter": "5.5"
+                "filter": "2.5"
             },
             "segmentation": {
                 "type": "canny",
@@ -32,8 +32,69 @@
             },
             "signDetection": {
                 "type": "DnnMnist",
-                "path": "model/mnist_trained_model.h5"
+                "path": "model/mnist_cnn.h5"
+            }
+        },
+        {
+            "id": "2",
+            "type": "numberDetection",
+            "preProcessing": {
+                "type": "gammaCorrection",
+                "filter": "2.5"
+            },
+            "segmentation": {
+                "type": "canny",
+                "threshold1": 250,
+                "threshold2": 50
+            },
+            "featureDetection": {
+                "type": "findContours"
+            },
+            "signDetection": {
+                "type": "DnnMnist",
+                "path": "model/mnist_cnn.h5"
+            }
+        },
+        {
+            "id": "3",
+            "type": "numberDetection",
+            "preProcessing": {
+                "type": "gammaCorrection",
+                "filter": "2.5"
+            },
+            "segmentation": {
+                "type": "canny",
+                "threshold1": 250,
+                "threshold2": 50
+            },
+            "featureDetection": {
+                "type": "findContours"
+            },
+            "signDetection": {
+                "type": "DnnMnist",
+                "path": "model/mnist_cnn.h5"
+            }
+        },
+        {
+            "id": "4",
+            "type": "numberDetection",
+            "preProcessing": {
+                "type": "gammaCorrection",
+                "filter": "2.5"
+            },
+            "segmentation": {
+                "type": "canny",
+                "threshold1": 250,
+                "threshold2": 50
+            },
+            "featureDetection": {
+                "type": "findContours"
+            },
+            "signDetection": {
+                "type": "DnnMnist",
+                "path": "model/mnist_cnn.h5"
             }
         }
+
     ]
 }

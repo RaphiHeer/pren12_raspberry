@@ -9,12 +9,15 @@ class ImageSignDetectionDnnMnist(ImageSignDetectorBase):
 
     def __init__(self, settings):
         self.modelPath = settings['path']
+        print("Model not created, please fix before productive!")
         self.model = load_model(self.modelPath)
 
     def detectSign(self, image, regionRectangle, debugger = None):
-
+        """"
         # Get sign as a fitting square
         imageRegion = self.getFittingImageRegion(image, regionRectangle)
+
+        print(imageRegion.std())
 
         # Thresholding of image to get a binary image
         im_thresh = cv2.threshold(imageRegion, 128, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)[1]
@@ -33,18 +36,23 @@ class ImageSignDetectionDnnMnist(ImageSignDetectorBase):
         digitColor = self.determineDigitColor(im_resize1)
         if digitColor == self.BLACK_DIGIT:
             im_resize1 = ~im_resize1
+        """
 
         # Resize again to fit the CNN
-        im_resize2 = resize(im_resize1, (28, 28), mode='constant')
+        im_resize2 = resize(image, (28, 28), mode='constant')
         im_final = im_resize2.reshape(1, 28, 28, 1)
 
+        cv2.imshow("found image", im_resize2)
+
         # Predict image
-        ans = self.model.predict(im_final)
+        print("Before prediction")
+        #ans = self.model.predict(im_final)
+        print("After prediction")
 
         # Read predictions from CNN
-        prediction = ans[0].tolist().index(max(ans[0].tolist()))
-        probability = ans[0].tolist()[prediction] * 100
+        prediction = 1#= ans[0].tolist().index(max(ans[0].tolist()))
+        probability = 10#= ans[0].tolist()[prediction] * 100
 
-        print("DNN: %s digit detected. Digit was %d with a probability of %.2f" % (digitColor, prediction, probability))
+        print("DNN: Digit detected. Digit was %d with a probability of %.2f" % (prediction, probability))
 
         return [prediction, probability]
