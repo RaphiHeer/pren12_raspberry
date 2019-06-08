@@ -34,6 +34,10 @@ class ImageProcessor:
             afterRead = time.time()
             print("Time too read frame: %.3f" % (afterRead - beforeRead))
 
+            if image is None:
+                continue
+
+
             imageGray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
             self.debugger.debugImage("From Camera", image)
 
@@ -58,7 +62,7 @@ class ImageProcessor:
                 prediction, probability = self.signDetector.detectSign(region['image'], region["rectangle"], self.debugger)
 
                 # Depending on the propability, send image to arduino or not
-                if probability > 80 and xPos < mostLeftXpos:
+                if prediction != -1 and xPos < mostLeftXpos:
                     mostLeftPrediction = {"prediction": prediction, "probability": probability,
                                           "isInfoSignal": region["isInfoSignal"], "rectangle": region["rectangle"]}
                 else:

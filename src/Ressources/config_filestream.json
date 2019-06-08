@@ -4,7 +4,8 @@
         "createLogs": false,
         "logfileRandomPrefix": true,
         "showImages": true,
-        "saveImages": false
+        "saveImages": false,
+        "concurrency": "none"
     },
     "imageStream": {
         "type": "file",
@@ -29,8 +30,10 @@
                 "type": "findContours"
             },
             "signDetection": {
-                "type": "DnnMnist",
-                "path": "model/mnist_cnn.h5"
+                "type": "TM",
+                "path": "model/mnist_cnn_2.h5",
+                "savePredictions": true,
+                "savePredictionsPath": "ml/"
             }
         }
     ]

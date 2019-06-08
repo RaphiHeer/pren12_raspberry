@@ -19,12 +19,12 @@ else:
 
 config = ConfigReader(configPath)
 
-factory = ImageProcessorFactory()
+factory = ImageProcessorFactory(config.imageStream)
 
 objs = factory.createImageProcessors(config.imageProcessors)
 
-vs = VideoStream(src=0).start()
-sleep(2.0)
+#vs = VideoStream(src=0).start()
+#sleep(2.0)
 print(objs)
-objs[0].processVideoStream(vs, "")
+objs[0].processVideoStream("", "")
 

@@ -29,6 +29,7 @@ class ConfigReader:
         self.applicationSettings["logfileRandomPrefix"] = jsonApplicationSettings.get("logfileRandomPrefix", True)
         self.applicationSettings["showImages"] = jsonApplicationSettings.get("showImages", True)
         self.applicationSettings["saveImages"] = jsonApplicationSettings.get("saveImages", False)
+        self.applicationSettings["concurrency"] = jsonApplicationSettings.get("concurrency", "thread")
 
 
     def setImageStreamSettings(self, jsonData):
@@ -119,6 +120,10 @@ class ConfigReader:
 
         if signDetectionSettings["type"] == "DnnMnist":
             signDetectionSettings["path"] = jsonImageSignDetection.get("path", "model/mnist_trained_model.h5")
+            signDetectionSettings["savePredictions"] = jsonImageSignDetection.get("savePredictions", False)
+            signDetectionSettings["savePredictionsPath"] = jsonImageSignDetection.get("savePredictionsPath", "")
+        elif signDetectionSettings["type"] == "TM":
+            signDetectionSettings["method"] = jsonImageSignDetection.get("method", 0)
 
         return signDetectionSettings
 

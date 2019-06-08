@@ -7,6 +7,7 @@ from concurrent.futures import ThreadPoolExecutor
 from concurrent.futures import ProcessPoolExecutor
 import threading
 from ConfigReader import *
+import ConcurrencyHandling
 from ImageProcessing import *
 from ImageProcessing.ImageDebugger import *
 import ImageProcessing.ImageProcessorFactory as factory
@@ -66,31 +67,15 @@ def createThreads():
 
     return threadList
 
-def runImageProcessorAsProcess(pipe: Pipe):
-    print("Process created!!!!!!!!!")
-    imageProcessorSetting, arduinoConnector, debugger, stream = pipe.recv()
-    imageProcessor = factory.createImageProcessor(imageProcessorSetting, debugger)
-    print("This is a new process!!!!!!!!!!")
-    imageProcessor.processVideoStream(stream, arduinoConnector)
-    return
 
-
-def runImageProcessorAsThread(imageProcessorSetting, stream, debugger ,arduinoConnector):
-    try:
-        print("Run new Thread!")
-        print(imageProcessorSetting)
-        imageProcessor = factory.createImageProcessor(imageProcessorSetting, debugger)
-        print("Started image processing")
-        imageProcessor.processVideoStream(stream, arduinoConnector)
-        print("Ended image Processing")
-    except Exception as e:
-        print("Exception in thread: %s" % str(e))
-    return
 
 def runMainApplication(configPath):
     config = ConfigReader(configPath)
 
-    debugger = ImageDebugger(config.getApplicationSettings())
+    applicationSettings = config.getApplicationSettings()
+    concurrency = applicationSettings['concurrency']
+
+    debugger = ImageDebugger(applicationSettings)
     arduinoConnector = ArduinoConnector()
 
     imageQueue = Queue(maxsize=5)
@@ -101,68 +86,20 @@ def runMainApplication(configPath):
 
     imageProcessors = factory.createImageProcessorList(config.imageProcessors, debugger)
 
-    if useMultiProcessing:
-        print("Using Multiprocessing")
-        #processList = createProcesses(imageProcessors, stream, arduinoConnector)
-        with ProcessPoolExecutor(max_workers=6) as pool:
-            for imageProcessorSettings in config.imageProcessors:
-                print("Starting new process\n\n\n")
-                print(imageProcessorSettings)
-                parent_conn, child_conn = Pipe()
-                pool.submit(runImageProcessorAsProcess, child_conn)
-                print("Send stuff")
-                #parent_conn.send((imageProcessorSettings, arduinoConnector, debugger, stream))
+    if concurrency == "process":
+        ConcurrencyHandling.runImageProcessingProcessPool(config.imageProcessors, applicationSettings, stream, arduinoConnector)
 
-            print("Stuff initialized")
 
-            while True:
-                try:
-                    time.sleep(1)
-                except KeyboardInterrupt:
-                    print("Keyboard Interrupt received")
-                    arduinoConnector.shutdownConnection()
-                    stream.stop()
-                    pool.shutdown()
-                    break
+    elif concurrency == "thread":
+        ConcurrencyHandling.runImageProcessingThreadPool(config.imageProcessors, applicationSettings, stream, arduinoConnector)
 
-    if useMultiProcessing is False:
-        print("Using Threads")
-        #threadList = createImageProcessingThreadList(imageProcessors, stream, arduinoConnector)
-        with ThreadPoolExecutor(max_workers=6) as pool:
-            for imageProcessorSettings in config.imageProcessors:
-                print("Starting new threads\n\n\n")
-                pool.submit(runImageProcessorAsThread, imageProcessorSettings, stream, debugger, arduinoConnector)
-                print("AfterSubmit")
-                #thread.start()
-
-            while True:
-                try:
-                    time.sleep(1)
-                except KeyboardInterrupt:
-                    print("Keyboard Interrupt received")
-                    arduinoConnector.shutdownConnection()
-                    stream.stop()
-                    pool.shutdown()
-                    break
-
+    else:
+        imageProcessor = factory.createImageProcessor(config.imageProcessors[0], debugger)
+        print("Started image processing")
+        imageProcessor.processVideoStream(stream, arduinoConnector)
+        return
     #for process in processList:
     #    process.start()
-
-    while True:
-        try:
-            time.sleep(1)
-        except KeyboardInterrupt:
-            print("Keyboard Interrupt received")
-            arduinoConnector.shutdownConnection()
-            stream.stop()
-            if useMultiProcessing:
-                for process in processList:
-                    process.terminate()
-            else:
-                for thread in threadList:
-                    thread.stop()
-            print("Shutting down application")
-            break
 
 
 if __name__ == '__main__':

@@ -2,7 +2,7 @@ from .ImageSignDetectorBase import *
 import cv2
 import time
 
-class ImageSignDetectorBase:
+class ImageSignDetectorSaveForTraining:
     def __init__(self, settings):
         print("Init Edge Detection Base")
         self.path = "../../ml/"

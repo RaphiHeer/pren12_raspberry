@@ -6,6 +6,7 @@ class ImageFeatureDetectorBase:
     PIXELS_IN_IMAGE = 28 * 28
 
     def __init__(self, settings):
+        self.paddingImage = cv2.cvtColor(cv2.imread("Ressources/padding_image.png"), cv2.COLOR_BGR2GRAY)
         print("Init Feature Detection Base")
 
     def detectFeatures(self, originalImage, segmentedImage, drawImage = None):
@@ -18,7 +19,7 @@ class ImageFeatureDetectorBase:
         print(imageRegion.std())
 
         # Thresholding of image to get a binary image
-        thresholdedImage = cv2.threshold(imageRegion, 128, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)[1]
+        thresholdedImage = cv2.threshold(imageRegion, 120, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)[1]
 
         # Resize to 28*28 pixel since mnist takes only this size
         try:
@@ -35,7 +36,9 @@ class ImageFeatureDetectorBase:
         # Determine which color the digit was and correct if needed since mnist needs white digits
         digitColor = self.determineDigitColor(resizedImage)
         if digitColor == self.BLACK_DIGIT:
-            im_resize1 = ~resizedImage
+            resizedImage = ~resizedImage
+
+        resizedImage = cv2.bitwise_and(resizedImage, self.paddingImage)
 
         return resizedImage
 

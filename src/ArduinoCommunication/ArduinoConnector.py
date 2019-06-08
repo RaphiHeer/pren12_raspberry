@@ -69,13 +69,17 @@ class ArduinoConnector:
         self.resetNumberPins()
 
         # Calculate bits
-        bit0 = (number % 2) == 1
-        number /= 2
-        bit1 = (number % 2) == 1
-        number /= 2
-        bit2 = (number % 4) == 1
-        number /= 2
-        bit3 = (number % 8) == 1
+        bit0 = (number & 1) == 1
+        number = int(number / 2)
+
+        bit1 = (number & 1) == 1
+        number = int(number / 2)
+
+        bit2 = (number & 1) == 1
+        number = int(number / 2)
+
+        bit3 = (number & 1) == 1
+        number = int(number / 2)
 
         print("Sending following bit combination: %d%d%d%d - Is Info Sign: %d" % (bit3, bit2, bit1, bit0, isInfoSign))
 

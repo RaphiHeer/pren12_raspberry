@@ -9,6 +9,7 @@ from .ImageFeatureDetection.ImageFeatureDetectorBase import *
 from .ImageFeatureDetection.ImageFeatureDetectorFindContours import *
 from .ImageSignDetection.ImageSignDetectorBase import *
 from .ImageSignDetection.ImageSignDetectorDnnMnist import *
+from .ImageSignDetection.ImageSignDetectorTemplateMatching import *
 
 def createImageProcessorList(settings, debugger):
     imageProcessors = []
@@ -55,6 +56,8 @@ def createImageFeatureDetector(settings):
 
 def createImageSignDetector(settings):
     if settings['type'] == 'DnnMnist':
-        imageSignDetector = ImageSignDetectionDnnMnist(settings)
+        imageSignDetector = ImageSignDetectorDnnMnist(settings)
+    else: # settings['type'] == "TM":
+        imageSignDetector = ImageSignDetectorTemplateMatching(settings)
 
     return imageSignDetector

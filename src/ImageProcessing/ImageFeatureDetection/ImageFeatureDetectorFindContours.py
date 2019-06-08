@@ -29,6 +29,7 @@ class ImageFeatureDetectionFindContours(ImageFeatureDetectorBase):
 
         self.max_x = 400
 
+        self.paddingImage = cv2.cvtColor(cv2.imread("Ressources/padding_image.png"), cv2.COLOR_BGR2GRAY)
 
         return
 
@@ -85,11 +86,13 @@ class ImageFeatureDetectionFindContours(ImageFeatureDetectorBase):
                 self.drawContour(debugDrawImage, c, rect, (50, 150, 180))
                 continue
 
+            cv2.imshow("Filled contours", originalImage)
+
             region = {}
             region["rectangle"] = rect
             region["isInfoSignal"] = self.isInfoSignal(x, y)
             region["image"] = self.readImageRegionAsSquareFromImage(originalImage, rect)
-
+            cv2.imshow("Immage", region["image"])
             if debugDrawImage is not None:
                 cv2.putText(debugDrawImage, ("H: %d W: %d\nX: %d Y: %d" % (h, w, x, y)), (x + 20, y + h + 10), cv2.FONT_HERSHEY_SIMPLEX, 1,
                             (0, 255, 0), 1)

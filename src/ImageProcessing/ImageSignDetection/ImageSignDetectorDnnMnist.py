@@ -1,15 +1,27 @@
 from .ImageSignDetectorBase import *
 import cv2
+""""
+from skimage.transform import resize
 import tensorflow as tf
 from tensorflow import keras
-from skimage.transform import resize
 from keras.models import load_model
+"""
+from skimage.transform import resize
+import time
+import uuid
 
-class ImageSignDetectionDnnMnist(ImageSignDetectorBase):
+class ImageSignDetectorDnnMnist(ImageSignDetectorBase):
 
     def __init__(self, settings):
+        import tensorflow as tf
+        from tensorflow import keras
+        from keras.models import load_model
         self.modelPath = settings['path']
-        print("Model not created, please fix before productive!")
+        self.savePredictions = settings['savePredictions']
+
+        if self.savePredictions:
+            self.savePredictionsPath = settings['savePredictionsPath']
+
         self.model = load_model(self.modelPath)
 
     def detectSign(self, image, regionRectangle, debugger = None):
@@ -40,18 +52,30 @@ class ImageSignDetectionDnnMnist(ImageSignDetectorBase):
 
         # Resize again to fit the CNN
         im_resize2 = resize(image, (28, 28), mode='constant')
-        im_final = im_resize2.reshape(1, 28, 28, 1)
+        im_final = image.reshape(1, 28, 28, 1)
 
-        cv2.imshow("found image", im_resize2)
 
         # Predict image
         print("Before prediction")
-        #ans = self.model.predict(im_final)
+        ans = self.model.predict(im_final)
+        pred = ans
+        ans = ans[0].tolist()
         print("After prediction")
+        print(pred.argmax(axis=1)[0])
 
         # Read predictions from CNN
-        prediction = 1#= ans[0].tolist().index(max(ans[0].tolist()))
-        probability = 10#= ans[0].tolist()[prediction] * 100
+        prediction = ans.index(max(ans))
+        probability = ans[prediction] * 100
+
+        cv2.imshow("found image", image)
+        print("\n\nPrediction:")
+        for i in range(0, 10):
+            print("Prop of %d is %.2f" % (i, ans[i]))
+
+        cv2.waitKey()
+        print(cv2.img_hash.blockMeanHash(image))
+        if self.savePredictions and probability > 80:
+            cv2.imwrite(self.savePredictionsPath + ("/%d/" % prediction) + str(uuid.uuid4()) + ".png", image)
 
         print("DNN: Digit detected. Digit was %d with a probability of %.2f" % (prediction, probability))
 
