@@ -22,13 +22,13 @@ def createImageProcessorList(settings, debugger):
 
     return imageProcessors
 
-def createImageProcessor(imageProcessorSetting, debugger):
+def createImageProcessor(imageProcessorSetting, debugger, logger = None):
     imagePreProcessor = createImagePreProcessor(imageProcessorSetting['preProcessing'])
     imageSegmentation = createImageSegmentation(imageProcessorSetting['segmentation'])
     imageFeatureDetector = createImageFeatureDetector(imageProcessorSetting['featureDetection'])
     imageSignDetector = createImageSignDetector(imageProcessorSetting['signDetection'])
 
-    imageProcessor = ImageProcessor(imagePreProcessor, imageSegmentation, imageFeatureDetector, imageSignDetector, debugger)
+    imageProcessor = ImageProcessor(imagePreProcessor, imageSegmentation, imageFeatureDetector, imageSignDetector, debugger, logger=logger)
     return imageProcessor
 
 def createImagePreProcessor(settings):

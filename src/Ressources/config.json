@@ -3,39 +3,42 @@
         "logfile": "data.log",
         "createLogs": false,
         "logfileRandomPrefix": true,
-        "showImages": true,
+        "showImages": false,
         "saveImages": false,
-        "concurrency": "thread"
+        "concurrency": "process"
     },
 
     "imageStream": {
         "type": "picam",
-        "shutterTime": 14000,
+        "framerate": 30,
+        "iso": 1600,
+        "shutterTime": 1600,
         "resolutionW": 640,
         "resolutionH": 480
     },
 
-    "imageProcessors": [
-        {
+    "imageProcessors":
+    {
             "id": "1",
             "type": "numberDetection",
+            "numberOfImageProcessors": 5,
             "preProcessing": {
-                "type": "gammaCorrection",
-                "filter": "2.5"
+                "type": "none",
+                "gamma": 1
             },
             "segmentation": {
                 "type": "canny",
-                "threshold1": 250,
-                "threshold2": 50
+                "threshold1": 50,
+                "threshold2": 80
             },
             "featureDetection": {
                 "type": "findContours"
             },
             "signDetection": {
-                "type": "DnnMnist",
-                "path": "model/mnist_cnn.h5"
+                "type": "TM",
+                "path": "model/mnist_cnn_2.h5",
+                "savePredictions": true,
+                "savePredictionsPath": "ml/"
             }
-        }
-
-    ]
+    }
 }

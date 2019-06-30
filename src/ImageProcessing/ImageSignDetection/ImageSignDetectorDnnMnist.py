@@ -52,7 +52,7 @@ class ImageSignDetectorDnnMnist(ImageSignDetectorBase):
 
         # Resize again to fit the CNN
         im_resize2 = resize(image, (28, 28), mode='constant')
-        im_final = image.reshape(1, 28, 28, 1)
+        im_final = im_resize2.reshape(1, 28, 28, 1)
 
 
         # Predict image
@@ -67,13 +67,12 @@ class ImageSignDetectorDnnMnist(ImageSignDetectorBase):
         prediction = ans.index(max(ans))
         probability = ans[prediction] * 100
 
-        cv2.imshow("found image", image)
         print("\n\nPrediction:")
         for i in range(0, 10):
             print("Prop of %d is %.2f" % (i, ans[i]))
 
-        cv2.waitKey()
-        print(cv2.img_hash.blockMeanHash(image))
+        for i in cv2.img_hash.averageHash(image):
+            print(i)
         if self.savePredictions and probability > 80:
             cv2.imwrite(self.savePredictionsPath + ("/%d/" % prediction) + str(uuid.uuid4()) + ".png", image)
 

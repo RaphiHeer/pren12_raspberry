@@ -5,16 +5,26 @@ except ImportError:
     print("RPi.GPIO not installed")
     GPIOsImported = False
 
-from multiprocessing import Lock
+from multiprocessing import Lock as ProcessLock
+from threading import Lock as ThreadLock
+import logging
 
 class ArduinoConnector:
 
-    def __init__(self):
+    def __init__(self, concurrency):
+        self.logger = logging.getLogger()
+
         if GPIOsImported:
             self.setGPIOPins()
             self.initGPIOPins()
+        else:
+            self.logger.warning("GPIOs not installed -> therefor no arduino communication")
 
-        self.sendLock = Lock()
+        if concurrency == "process":
+            self.sendLock = ProcessLock()
+        else:
+            self.sendLock = ThreadLock()
+
 
     def setGPIOPins(self):
         # Number PINS
@@ -47,10 +57,12 @@ class ArduinoConnector:
         GPIO.setup(self.GPIO_NUMBER_BIT_1, GPIO.OUT)
         GPIO.setup(self.GPIO_NUMBER_BIT_2, GPIO.OUT)
         GPIO.setup(self.GPIO_NUMBER_BIT_3, GPIO.OUT)
+
         GPIO.setup(self.GPIO_IS_INFO_SIGN, GPIO.OUT)
         GPIO.setup(self.GPIO_SIGN_INTERRUPT, GPIO.OUT)
         GPIO.setup(self.GPIO_PI_INI_DONE, GPIO.OUT)
         GPIO.setup(self.GPIO_CAM_READY, GPIO.OUT)
+
         GPIO.setup(self.GPIO_ARDUINO_INIT_DONE, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
         GPIO.setup(self.GPIO_CUBE_STORED, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
         GPIO.setup(self.GPIO_TRAIN_STOPPED, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
@@ -81,7 +93,7 @@ class ArduinoConnector:
         bit3 = (number & 1) == 1
         number = int(number / 2)
 
-        print("Sending following bit combination: %d%d%d%d - Is Info Sign: %d" % (bit3, bit2, bit1, bit0, isInfoSign))
+        print("Sending following bit combination: %d%d%d%d - Is Info Sign: %d\n\n\n" % (bit3, bit2, bit1, bit0, isInfoSign))
 
         # Send interrupt
         GPIO.output(self.GPIO_NUMBER_BIT_0, bit0)

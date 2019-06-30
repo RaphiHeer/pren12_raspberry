@@ -10,7 +10,10 @@ import cv2
 
 
 class PiVideoStream(ImageVideoStreamBase):
-    def __init__(self, settings, imageQueue: Queue):
+    def __init__(self, settings, useMultiProcessing = False):
+
+        self.useMultiProcessing = useMultiProcessing
+
         # Read settings
         self.resolution = settings['resolution']
         self.framerate = settings['framerate']
@@ -23,7 +26,7 @@ class PiVideoStream(ImageVideoStreamBase):
         self.camera.framerate = self.framerate
         self.camera.exposure_mode = 'off'
         self.camera.rotation = 180
-        self.camera.shutter_speed = 20000
+        self.camera.shutter_speed = self.shutterTime
         self.camera.iso = self.iso
 
         # Create stream
@@ -34,6 +37,7 @@ class PiVideoStream(ImageVideoStreamBase):
         # initialize the frame and the variable used to indicate
         # if the thread should be stopped
         self.frame = None
+        self.started = False
         self.stopped = False
 
         # Count images and FPS
@@ -41,23 +45,27 @@ class PiVideoStream(ImageVideoStreamBase):
         self.startMeasureTime = 0
 
         # Create lock
-        self.lock = Lock()
-        self.imageQueue = imageQueue
+        if self.useMultiProcessing:
+            self.imageQueue = Queue(maxsize=5)
+            self.lock = Lock()
 
-    def start(self, useMultiProcessing = False):
+    def start(self):
+        # If start was already called
+        if self.started:
+            return self
+        self.started = True
+
         # start the thread to read frames from the video stream
-        self.useMultiProcessing = useMultiProcessing
-
-        if useMultiProcessing:
-            t = Thread(target=self.updateMultprocessing, args=())
+        if self.useMultiProcessing:
+            t = Thread(target=self.updateMultProcessing, args=())
         else:
-            t = Thread(target=self.updateMultithreading, args=())
+            t = Thread(target=self.updateMultiThreading, args=())
         t.daemon = True
         self.startMeasureTime = time.time()
         t.start()
         return self
 
-    def updateMultprocessing(self):
+    def updateMultProcessing(self):
         # keep looping infinitely until the thread is stopped
         for f in self.stream:
             # grab the frame from the stream and clear the stream in
@@ -68,7 +76,7 @@ class PiVideoStream(ImageVideoStreamBase):
                 print("Cleaning 1 element from queue")
                 self.imageQueue.get(block=True)
             self.imageQueue.put(frame)
-            print("Set next frame")
+            #print("Set next frame")
             # if the thread indicator variable is set, stop the thread
             # and resource camera resources
             if self.stopped:
@@ -77,14 +85,14 @@ class PiVideoStream(ImageVideoStreamBase):
                 self.camera.close()
                 return
 
-    def updateMultithreading(self):
+    def updateMultiThreading(self):
         # keep looping infinitely until the thread is stopped
         for f in self.stream:
             # grab the frame from the stream and clear the stream in
             # preparation for the next frame
             self.frame = f.array
             self.rawCapture.truncate(0)
-            print("Set next frame")
+            #print("Set next frame")
             # if the thread indicator variable is set, stop the thread
             # and resource camera resources
             if self.stopped:
@@ -97,13 +105,9 @@ class PiVideoStream(ImageVideoStreamBase):
         if self.useMultiProcessing:
             retFrame = self.imageQueue.get(block=True)
         else:
-            retFrame = self.frame
+            retFrame = self.frame.copy()
 
         self.imagesReaded += 1
-        if self.imagesReaded % 50 == 0:
-            totalTime = time.time() - self.startMeasureTime
-            fps = self.imagesReaded / totalTime
-            print("FPS: " + str(fps))
 
         # return the frame most recently read
         return retFrame
@@ -111,3 +115,6 @@ class PiVideoStream(ImageVideoStreamBase):
     def stop(self):
         # indicate that the thread should be stopped
         self.stopped = True
+
+    def getImageQueue(self):
+        return self.imageQueue

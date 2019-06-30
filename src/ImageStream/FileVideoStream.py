@@ -7,7 +7,9 @@ from os import listdir
 from os.path import isfile, join
 
 class FileVideoStream(ImageVideoStreamBase):
-	def __init__(self, settings, imageQueue):
+	def __init__(self, settings, useMultiProcessing = False):
+		self.useMultiProcessing = useMultiProcessing
+
 		# initialize the camera and stream
 		print(settings)
 		self.framerate = settings['framerate']
@@ -25,9 +27,8 @@ class FileVideoStream(ImageVideoStreamBase):
 		print("LastFrameRead: %.3f secs" % (time.time() - self.lastFrameRead))
 		time.sleep(5)
 
-	def start(self, useMultiProcessing = False):
-		self.useMultiProcessing = useMultiProcessing
-		if useMultiProcessing:
+	def start(self):
+		if self.useMultiProcessing:
 			self.lock = Lock()
 		# start the thread to read frames from the video stream
 		return self

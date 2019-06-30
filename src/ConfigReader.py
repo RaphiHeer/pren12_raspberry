@@ -17,8 +17,8 @@ class ConfigReader:
     def getImageStreamSettings(self):
         return self.imageStreamSettings
 
-    def getImageProcessors(self):
-        return self.imageProcessors
+    def getImageProcessorSettings(self):
+        return self.imageProcessorSettings
 
     def setApplicationSettings(self, jsonData):
         jsonApplicationSettings = jsonData.get("applicationSettings", {})
@@ -54,16 +54,13 @@ class ConfigReader:
     def setImageProcessorSettings(self, jsonData):
         jsonImageProcessors = jsonData.get("imageProcessors", "None")
 
-        self.imageProcessors = []
-
-        for jsonImageProcessor in jsonImageProcessors:
-            self.imageProcessors.append(self.createImageProcessorSettings(jsonImageProcessor))
+        self.imageProcessorSettings = (self.createImageProcessorSettings(jsonImageProcessors))
 
     def createImageProcessorSettings(self, jsonImageProcessor):
         imageProcessorSettings = {}
-        imageProcessorSettings["id"] = jsonImageProcessor.get("id")
         imageProcessorSettings["type"] = jsonImageProcessor.get("type")
         imageProcessorSettings["imageSource"] = jsonImageProcessor.get("imageSource", "videoStream")
+        imageProcessorSettings["numberOfImageProcessors"] = jsonImageProcessor.get("numberOfImageProcessors", 1)
 
         jsonPreProcessor = jsonImageProcessor.get("preProcessing")
         jsonSegmentation = jsonImageProcessor.get("segmentation")

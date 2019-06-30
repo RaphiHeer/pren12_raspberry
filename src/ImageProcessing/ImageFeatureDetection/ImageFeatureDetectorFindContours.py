@@ -14,7 +14,7 @@ class ImageFeatureDetectionFindContours(ImageFeatureDetectorBase):
         self.infoStopDividerOffset = 200
 
         self.m_info_top = 0.45  # y2 - y1 / 250
-        self.c_info_top = -70
+        self.c_info_top = -50
 
         self.m_info_bottom = 0.06  # 180 - 165 / 250 - 0
         self.c_info_bottom = 175
@@ -22,8 +22,8 @@ class ImageFeatureDetectionFindContours(ImageFeatureDetectorBase):
         self.m_stop_top = -0.52  # 190 - y1 / 250
         self.c_stop_top = 310
 
-        self.m_stop_bottom = -1.15  # 200 - y1 / 250
-        self.c_stop_bottom = 590
+        self.m_stop_bottom = -1.0  # 200 - y1 / 250
+        self.c_stop_bottom = 600
 
         self.m_heightRangeMax = 1.2
 
@@ -50,8 +50,11 @@ class ImageFeatureDetectionFindContours(ImageFeatureDetectorBase):
 
         for c in cnts:
             rect = cv2.boundingRect(c)
-            #print(rect)
             x, y, w, h = rect
+
+            if x == 0:
+                self.drawContour(debugDrawImage, c, rect, (0, 0, 255))
+                continue
 
             if w > h:
                 self.drawContour(debugDrawImage, c, rect, (0, 0, 255))
@@ -86,13 +89,11 @@ class ImageFeatureDetectionFindContours(ImageFeatureDetectorBase):
                 self.drawContour(debugDrawImage, c, rect, (50, 150, 180))
                 continue
 
-            cv2.imshow("Filled contours", originalImage)
-
             region = {}
             region["rectangle"] = rect
             region["isInfoSignal"] = self.isInfoSignal(x, y)
-            region["image"] = self.readImageRegionAsSquareFromImage(originalImage, rect)
-            cv2.imshow("Immage", region["image"])
+            region["image"], region["digitColor"] = self.readImageRegionAsSquareFromImage(originalImage, rect)
+
             if debugDrawImage is not None:
                 cv2.putText(debugDrawImage, ("H: %d W: %d\nX: %d Y: %d" % (h, w, x, y)), (x + 20, y + h + 10), cv2.FONT_HERSHEY_SIMPLEX, 1,
                             (0, 255, 0), 1)
@@ -107,9 +108,7 @@ class ImageFeatureDetectionFindContours(ImageFeatureDetectorBase):
 
     def isInfoSignal(self, x, y):
 
-        if (self.m_stop_bottom * x + self.c_stop_bottom) < y:
-            return False
-        return True
+        return y < 240
 
     def isInSignRange(self, x, y):
         if x > self.max_x:

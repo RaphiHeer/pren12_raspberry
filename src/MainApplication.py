@@ -3,11 +3,11 @@ import importlib
 from threading import Thread
 import time
 from multiprocessing import Process, Queue, Pipe
-from concurrent.futures import ThreadPoolExecutor
-from concurrent.futures import ProcessPoolExecutor
 import threading
+import logging
 from ConfigReader import *
 import ConcurrencyHandling
+import vma208
 from ImageProcessing import *
 from ImageProcessing.ImageDebugger import *
 import ImageProcessing.ImageProcessorFactory as factory
@@ -21,32 +21,14 @@ try:
 except ImportError:
     print("PiCamera is not installed. If this is not a raspberry pi, this is ok.")
 
-
-ap = argparse.ArgumentParser()
-ap.add_argument("-c", "--config", required=False, help="path to input image")
-ap.add_argument("-m", "--multiprocessing", required=False, default=False)
-args = vars(ap.parse_args())
-
-if args["config"]:
-    configPath = args["config"]
-else:
-    configPath = "Ressources/config.json"
-
-if args["multiprocessing"]:
-    useMultiProcessing = True
-else:
-    useMultiProcessing = False
-
-print("Load config from: " + configPath)
-
-
-def createVideoStream(videoConfig, imageQueue):
+# Creates Video Stream
+def createVideoStream(videoConfig, useMultiProcessing = False):
     if videoConfig["type"] == "picam":
-        return PiVideoStream(videoConfig, imageQueue)
+        return PiVideoStream(videoConfig, useMultiProcessing)
     elif videoConfig["type"] == "file":
-        return FileVideoStream(videoConfig, imageQueue)
+        return FileVideoStream(videoConfig, useMultiProcessing)
 
-
+# Creates a process (obsolete)
 def createProcesses(imageProcessors, stream, arduinoConnector):
     processList = []
     for imageProcessor in imageProcessors:
@@ -55,6 +37,7 @@ def createProcesses(imageProcessors, stream, arduinoConnector):
 
     return processList
 
+# Creates a thread list (obsolete)
 def createImageProcessingThreadList(imageProcessors, stream, arduinoConnector):
     threadList = []
     for imageProcessor in imageProcessors:
@@ -62,46 +45,64 @@ def createImageProcessingThreadList(imageProcessors, stream, arduinoConnector):
 
     return threadList
 
-def createThreads():
-    threadList = []
+def runMainApplication(configPath, logger):
 
-    return threadList
-
-
-
-def runMainApplication(configPath):
+    # Get config reader (reads the config file)
     config = ConfigReader(configPath)
 
+    # Get Applications settings from config
     applicationSettings = config.getApplicationSettings()
     concurrency = applicationSettings['concurrency']
 
-    debugger = ImageDebugger(applicationSettings)
-    arduinoConnector = ArduinoConnector()
+    # Create objects for debugger and Arduino connector
+    arduinoConnector = ArduinoConnector(concurrency)
 
     imageQueue = Queue(maxsize=5)
-    stream = createVideoStream(config.getImageStreamSettings(), imageQueue)
-    stream = stream.start(useMultiProcessing)
-
-    #factory = ImageProcessorFactory()
-
-    imageProcessors = factory.createImageProcessorList(config.imageProcessors, debugger)
-
     if concurrency == "process":
-        ConcurrencyHandling.runImageProcessingProcessPool(config.imageProcessors, applicationSettings, stream, arduinoConnector)
-
-
-    elif concurrency == "thread":
-        ConcurrencyHandling.runImageProcessingThreadPool(config.imageProcessors, applicationSettings, stream, arduinoConnector)
-
+        useMultiProcessing = True
     else:
-        imageProcessor = factory.createImageProcessor(config.imageProcessors[0], debugger)
-        print("Started image processing")
+        useMultiProcessing = False
+    stream = createVideoStream(config.getImageStreamSettings(), useMultiProcessing)
+    stream = stream.start()
+
+    # Create logfile for vma208
+    ts = time.gmtime()
+    filename = time.strftime("vma208_logs/%Y-%m-%d %H_%M_%S .log", ts)
+    logger.info("Write vma208 log data to file: " + filename)
+    Thread(target=vma208.logDrivingData, args=(filename,)).start()
+
+    # Used if multi processing is enabled (most performance)
+    if concurrency == "process":
+        ConcurrencyHandling.runImageProcessingProcessPool(applicationSettings, config.getImageProcessorSettings(), stream, arduinoConnector)
+
+    # Used if multi threading is enabled
+    elif concurrency == "thread":
+        ConcurrencyHandling.runImageProcessingThreadPool(applicationSettings, config.getImageProcessorSettings(), stream, arduinoConnector)
+
+    # Used if no concurrency is wished
+    else:
+        print("Started image processing without concurrency")
+        imageProcessor = factory.createImageProcessor(config.getImageProcessorSettings(), debugger)
         imageProcessor.processVideoStream(stream, arduinoConnector)
         return
-    #for process in processList:
-    #    process.start()
 
 
 if __name__ == '__main__':
-    runMainApplication(configPath)
+    ap = argparse.ArgumentParser()
+    ap.add_argument("-c", "--config", required=False, help="path to input image")
+    ap.add_argument("-m", "--multiprocessing", required=False, default=False)
+    args = vars(ap.parse_args())
+
+    logger = logging.getLogger()
+    logger.setLevel(logging.DEBUG)
+
+    if args["config"]:
+        configPath = args["config"]
+        logger.info("Use %s as config file" % configPath)
+    else:
+        configPath = "Ressources/config.json"
+        logger.info("Use default logging file from %s" % configPath)
+
+    print("Load config from: " + configPath)
+    runMainApplication(configPath, logger)
 

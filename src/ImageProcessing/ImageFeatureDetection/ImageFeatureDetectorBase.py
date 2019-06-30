@@ -16,8 +16,6 @@ class ImageFeatureDetectorBase:
         # Get sign as a fitting square
         imageRegion = self.getFittingImageRegion(image, regionRectangle)
 
-        print(imageRegion.std())
-
         # Thresholding of image to get a binary image
         thresholdedImage = cv2.threshold(imageRegion, 120, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)[1]
 
@@ -40,7 +38,7 @@ class ImageFeatureDetectorBase:
 
         resizedImage = cv2.bitwise_and(resizedImage, self.paddingImage)
 
-        return resizedImage
+        return resizedImage, digitColor
 
     def determineDigitColor(self, image, isThresholded = True):
         whitePixelCount = cv2.countNonZero(image)

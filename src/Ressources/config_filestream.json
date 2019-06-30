@@ -5,36 +5,36 @@
         "logfileRandomPrefix": true,
         "showImages": true,
         "saveImages": false,
-        "concurrency": "none"
+        "concurrency": "process"
     },
     "imageStream": {
         "type": "file",
-        "path": "imageSeries/led05/",
+        "path": "imageSeries/final08/",
         "framerate": 10
     },
 
-    "imageProcessors": [
-        {
-            "id": "1",
-            "type": "numberDetection",
-            "preProcessing": {
-                "type": "gammaCorrection",
-                "gamma": 2
-            },
-            "segmentation": {
-                "type": "canny",
-                "threshold1": 10,
-                "threshold2": 250
-            },
-            "featureDetection": {
-                "type": "findContours"
-            },
-            "signDetection": {
-                "type": "TM",
-                "path": "model/mnist_cnn_2.h5",
-                "savePredictions": true,
-                "savePredictionsPath": "ml/"
-            }
+    "imageProcessors":
+    {
+        "id": "1",
+        "type": "numberDetection",
+        "numberOfImageProcessors": 1,
+        "preProcessing": {
+            "type": "gammaCorrection",
+            "gamma": 1
+        },
+        "segmentation": {
+            "type": "canny",
+            "threshold1": 50,
+            "threshold2": 100
+        },
+        "featureDetection": {
+            "type": "findContours"
+        },
+        "signDetection": {
+            "type": "TM",
+            "path": "model/mnist_cnn_2.h5",
+            "savePredictions": true,
+            "savePredictionsPath": "ml/"
         }
-    ]
+    }
 }
